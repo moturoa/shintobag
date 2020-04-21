@@ -157,6 +157,18 @@ match_bag_address <- function(x, bag, bag_columns = "all"){
   # adressen zonder huisnummer moeten NA zijn
   ff[!grepl("[0-9]", txt_), ] <- NA
 
+  # huisnummers moeten gelijk zijn
+  bag_match <- bag[match(ff$match, find_),]
+
+  mtch_huisnr <- rep(FALSE, length(txt_))
+  for(i in seq_along(txt_)){
+    nr <- bag_match$huisnummer[i]
+    if(is.na(nr))next
+    mtch_huisnr[i] <- any(grep(glue("\\b{nr}\\b"), txt_[i]))
+  }
+
+  ff[!mtch_huisnr, ] <- NA
+
   b <- cbind(bag[match(ff$match, find_), bag_columns],
              data.frame(char_distance = ff$distance))
 

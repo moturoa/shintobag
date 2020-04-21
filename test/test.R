@@ -37,6 +37,13 @@ search_bag_address(adres$adresveld1[11], bag, template = "{straat}{huisnummer}")
 
 
 
+options(shintobag_conf = "c:/repos/wbm3.0/conf/config.yml")
+
+download_gemeente_opendata("Rozendaal", out_path = "cache")
+
+
+
+
 
 
 

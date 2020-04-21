@@ -4,7 +4,10 @@
 \alias{shinto_db_connection}
 \title{Make a database connection}
 \usage{
-shinto_db_connection(what, file = "conf/config.yml")
+shinto_db_connection(
+  what,
+  file = getOption("shintobag_conf", "conf/config.yml")
+)
 }
 \description{
 Make a connection with RPostgres to one of the Shinto Labs databases.

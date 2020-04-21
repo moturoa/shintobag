@@ -2,12 +2,11 @@
 #' Make a database connection
 #' @description Make a connection with RPostgres to one of the Shinto Labs databases.
 #' @export
-shinto_db_connection <- function(what, file = "conf/config.yml"){
+shinto_db_connection <- function(what, file = getOption("shintobag_conf", "conf/config.yml")){
 
-  what <- match.arg(what)
   conf <- config::get(what, file = file)
 
-  dbConnect(RPostgres::Postgres(),
+  DBI::dbConnect(RPostgres::Postgres(),
             dbname = conf$dbname,
             host = conf$dbhost,
             port = 5432,
