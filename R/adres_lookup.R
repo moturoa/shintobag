@@ -43,19 +43,8 @@ make_address_field <- function(data,
     out <- data[, vars] %>%
       setNames(fields)
 
-    for(i in seq_len(ncol(out))){
-
-      nm <- fields[i]
-
-      out[,i] <- switch(nm,
-                        straat = out[,i],
-                        postcode = postcode_nospace(out[,i]),
-                        huisnummer = as.character(out[,i]),
-                        huisletter = out[,i],
-                        huisnummertoevoeging = out[,i],
-                        woonplaats = out[,i]
-      )
-
+    if("postcode" %in% fields){
+      out$postcode <- postcode_nospace(out$postcode)
     }
 
     adres_string <- apply(out, 1, function(x){
@@ -84,7 +73,7 @@ make_address_field <- function(data,
   }
 
   adres_string <- unname(adres_string)
-  class(adres_string) <- "adres_field"
+  class(adres_string) <- c("adres_field","character")
   attr(adres_string, "adres_fields") <- fields
 
   return(adres_string)
@@ -93,6 +82,8 @@ make_address_field <- function(data,
 
 #' @export
 print.adres_field <- function(x, n = 10, ...){
+
+  n <- min(n, length(x))
 
   x <- unclass(x)
   cat(paste("Adres field with",
@@ -147,10 +138,10 @@ match_bag_address <- function(x, bag, bag_columns = "all"){
     stop("Not all fields found in BAG.")
   }
 
-  txt_ <- unclass(x)
+  txt_ <- unclass(x) %>% no_space
 
   find_ <- bag_paste_columns(bag, fields) %>%
-    tolower
+    tolower %>% no_space
 
   ff <- fuzzy_find(txt_, find_)
 
@@ -161,10 +152,13 @@ match_bag_address <- function(x, bag, bag_columns = "all"){
   bag_match <- bag[match(ff$match, find_),]
 
   mtch_huisnr <- rep(FALSE, length(txt_))
+
   for(i in seq_along(txt_)){
     nr <- bag_match$huisnummer[i]
     if(is.na(nr))next
-    mtch_huisnr[i] <- any(grep(glue("\\b{nr}\\b"), txt_[i]))
+
+    # Huisnummer gevolgd door letter (huisletter, hopelijk) of 'word boundary' (space / eol)
+    mtch_huisnr[i] <- any(grepl(glue("(\\b|[a-z]){nr}(\\b|[a-z])"), txt_[i]))
   }
 
   ff[!mtch_huisnr, ] <- NA

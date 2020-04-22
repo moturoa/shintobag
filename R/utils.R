@@ -123,7 +123,7 @@ fuzzy_find <- function(x, y){
     if(length(ii)){
 
       return(list(
-        match = y[ii],
+        match = y[ii][1],
         distance = 0
       ))
 
