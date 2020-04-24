@@ -8,6 +8,7 @@ search_bag_address(
   txt,
   bag,
   template = "{straat} {huisnummer}",
+  bag_column = "adresseerbaarobject",
   progressbar = TRUE
 )
 }

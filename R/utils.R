@@ -65,10 +65,13 @@ remove_doublespace <- function(x){
   gsub(" +"," ",x)
 }
 
-remove_bad_chars <- function(x, chars=c(",",";","/"), double_space=TRUE){
+# Verwijder karakters die nooit in straatnamen voorkomen
+remove_bad_chars <- function(x,
+                             chars=c(",",";","/","_","&","%","@","#","$","!","?","*","(",")"),
+                             double_space=TRUE){
 
   for(i in seq_along(chars)){
-    x <- gsub(chars[i], " ", x)
+    x <- gsub(chars[i], " ", x, fixed = TRUE)
   }
 
   if(double_space){

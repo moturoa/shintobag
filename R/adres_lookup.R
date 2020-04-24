@@ -1,9 +1,4 @@
 
-
-
-
-
-
 #' Define an address field
 #' @description Used to define an address field, as a starting point to match the address in the BAG.
 #' @param data Either a dataframe (if columns argument is used), or a vector (if template argument is used).
@@ -53,7 +48,9 @@ make_address_field <- function(data,
              emp(x["straat"]), " ",
              emp(x["huisnummer"]),
              emp(x["huisletter"]), " ",
-             emp(x["huisnummertoevoeging"])) %>%
+             emp(x["huisnummertoevoeging"]), " ",
+             emp(x["woonplaats"])
+             ) %>%
         tolower(.) %>%
         str_trim(.) %>%
         remove_bad_chars(.)
@@ -188,8 +185,10 @@ return(b)
 #' bag, template = "{straat}{huisnummer}")
 #' }
 #' @export
-search_bag_address <- function(txt, bag,
+search_bag_address <- function(txt,
+                               bag,
                          template = "{straat} {huisnummer}",
+                         bag_column = "adresseerbaarobject",
                          progressbar = TRUE){
 
 
@@ -227,37 +226,15 @@ search_bag_address <- function(txt, bag,
   }
   if(progressbar)close(wp)
 
+  # Vervang index met gevraagde kolom, plak in 1.
+  out <- sapply(out, function(x){
+    paste(bag[x, bag_column], collapse=";")
+  })
+
 return(out)
 }
 
 
-
-expand_dataframe_labels <- function(data, label_col = "label"){
-
-  labels <- function(x){
-    str_trim(strsplit(as.character(x), ";")[[1]])
-  }
-
-  nlabels <- function(x){
-    length(labels(x))
-  }
-
-  l <- lapply(1:nrow(data), function(i){
-    if(nlabels(data[i, label_col]) <=  1){
-      return(data[i,])
-    } else {
-      labs <- labels(data[i,label_col])
-      out <- replicate(length(labs), data[i,], simplify = FALSE)
-
-      out <- do.call(rbind, out)
-
-      out[,label_col] <- labs
-      return(out)
-    }
-  })
-  as.data.frame(do.call(rbind, l))
-
-}
 
 
 

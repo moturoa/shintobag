@@ -159,31 +159,38 @@ rbind_geo <- function(lis){
 #'  with components: wijken, buurten, grens.
 #' @param gemeente E.g. "Eindhoven"
 #' @param out_path The relative path to write the datasets to.
-download_gemeente_opendata <- function(gemeente, out_path = "."){
+download_gemeente_opendata <- function(gemeente, out_path = ".", re_download = TRUE){
+
+  fn_geo <- file.path(out_path, paste0("geo_", gemeente, ".rds"))
+  fn_bag_1 <- file.path(out_path, paste0("bag_",gemeente,"_sf.rds"))
+  fn_bag_2 <- file.path(out_path, paste0("bag_",gemeente,".feather"))
 
   # gemeente grenzen, wijk, buurt grenzen
-  geo <- get_gemeente_geo(gemeente)
+  if(!file.exists(fn_geo) | re_download){
+    geo <- get_gemeente_geo(gemeente)
+    saveRDS(geo, fn_geo)
+  }
 
-  fn <- paste0("geo_", gemeente, ".rds")
-  saveRDS(geo, file.path(out_path, fn))
 
   # BAG
-  bag <- get_bag(gemeente)
+  if(!file.exists(fn_bag_2) | re_download){
+    bag <- get_bag(gemeente)
 
-  bag <- bag %>%
-    sf::st_join(dplyr::select(geo$buurten, buurt_naam = bu_naam)) %>%
-    sf::st_join(dplyr::select(geo$wijken, wijk_naam = wk_naam))
+    bag <- bag %>%
+      sf::st_join(dplyr::select(geo$buurten, buurt_naam = bu_naam)) %>%
+      sf::st_join(dplyr::select(geo$wijken, wijk_naam = wk_naam))
 
-  # sf-spatial
-  fn <- paste0("bag_",gemeente,"_sf.rds")
-  saveRDS(bag, file.path(out_path, fn))
+    # sf-spatial
 
-  # tibble, feather
-  bag <- tibble::as_tibble(bag)
-  bag$geopunt <- NULL
+    saveRDS(bag, fn_bag_1)
 
-  fn <- paste0("bag_",gemeente,".feather")
-  feather::write_feather(bag, file.path(out_path, fn))
+    # tibble, feather
+    bag <- tibble::as_tibble(bag)
+    bag$geopunt <- NULL
+
+    feather::write_feather(bag, fn_bag_2)
+
+  }
 
 }
 
