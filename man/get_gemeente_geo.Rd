@@ -2,7 +2,7 @@
 % Please edit documentation in R/bag_geo_download.R
 \name{get_gemeente_geo}
 \alias{get_gemeente_geo}
-\title{Download Buurt, Wijk, Gemeente borders}
+\title{Download Buurt, Wijk, Gemeente grenzen.}
 \usage{
 get_gemeente_geo(gemeente, ...)
 }

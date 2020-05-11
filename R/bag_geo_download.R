@@ -51,6 +51,33 @@ get_bag <- function(gemeente, con = NULL, ...){
   out
 }
 
+#' Maak extra adres velden aan in het BAG
+#' @description Combineert openbareruimtenaam, huisnummer, huisletter, huisnummertoevoeging
+#' in twee nieuwe kolommen: huisnummerhuisletter (12, 13B), en bag_adres (bv. Huisstraat 1A 12, Schoolplein 1).
+#' Vervangt ook NA met "" in huisnummer, huisletter, huisnummertoevoeging kolommen.
+#' @examples
+#' \dontrun{
+#'
+#' bag <- add_bag_adres_kolommen(bag)
+#'
+#' }
+#' @export
+add_bag_adres_kolommen <- function(data){
+
+  dplyr::mutate(data,
+                 huisnummer = tidyr::replace_na(huisnummer, ""),
+                 huisletter = tidyr::replace_na(huisletter, ""),
+                 huisnummertoevoeging = tidyr::replace_na(huisnummertoevoeging, ""),
+                 huisnummerhuisletter = paste0(huisnummer, huisletter, " ", huisnummertoevoeging),
+                 bag_adres = stringr::str_trim( paste0(openbareruimtenaam, " ",
+                                                       huisnummer,
+                                                       huisletter,
+                                                       huisnummertoevoeging))
+            )
+
+}
+
+
 # Get one geo at a time.
 # (don't export, see get_gemeente_geo below.)
 get_geo <- function(gemeente = NULL,
@@ -102,7 +129,7 @@ get_buurten <- function(gemeente, con = NULL, ...){
 
 
 
-#' Download Buurt, Wijk, Gemeente borders
+#' Download Buurt, Wijk, Gemeente grenzen.
 #' @description Downloads from the CSB database. Entry 'CBS' must be present in config file.
 #' @export
 get_gemeente_geo <- function(gemeente, ...){

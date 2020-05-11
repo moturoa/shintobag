@@ -37,6 +37,18 @@ first_nonempty_value <- function(x){
 }
 
 
+# Sorteer tekst op numerieke deel (prefix),
+# dus: 1, 1A, 2, 3, 10, niet
+# 1, (1A? NA?), 10, 2, 3
+sort_leading_num <- function(x, decreasing = FALSE){
+  if(length(x) == 1)return(x)
+
+  num <- gsub("[a-z].*", "", x, ignore.case = TRUE)
+  ii <- order(as.numeric(num), decreasing = decreasing)
+  x[ii]
+}
+
+
 
 # "{part} {one}{two}" naar c("part", "one",  "two")
 fields_from_template <- function(x){
