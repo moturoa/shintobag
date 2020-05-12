@@ -7,6 +7,7 @@ bagSelectUI <- function(id){
   ns <- NS(id)
 
   tagList(
+    selectInput(ns("sel_woonplaats"), "Woonplaats", choices = NULL, multiple = FALSE),
     autocomplete_input(ns("sel_openbareruimtenaam"), "Straat", options = NULL, max_options = 100),
     selectInput(ns("sel_huisnummerhuisletter"), "Huisnummer", choices = NULL), #, max_options = 100),
     tags$div(style = "padding-top: 25px; ",
@@ -36,11 +37,25 @@ bagSelect <- function(input, output, session, bag){
                             "</style>');")
   shinyjs::runjs(css_auto_option)
 
-  # Dit is vele malen sneller dan updateSelectInput
-  # (zelfs met server = TRUE in updateSelectizeInput)
-  update_autocomplete_input(session, "sel_openbareruimtenaam",
-                            options = c("", sort(unique(bag$openbareruimtenaam))),
-                            value = "")
+  updateSelectizeInput(session, "sel_woonplaats",
+                       choices = sort(unique(bag$woonplaatsnaam)),
+                       selected = "")
+
+  observe({
+
+    woonpl <- input$sel_woonplaats
+    req(woonpl)
+
+    bag_woonpl <- dplyr::filter(bag, woonplaatsnaam %in% !!woonpl)
+
+    # Dit is vele malen sneller dan updateSelectInput
+    # (zelfs met server = TRUE in updateSelectizeInput)
+    update_autocomplete_input(session, "sel_openbareruimtenaam",
+                              options = c("", sort(unique(bag_woonpl$openbareruimtenaam))),
+                              value = "")
+
+  })
+
 
   # Huisnummer/huisletter combo opties weergeven.
   observe({
@@ -60,24 +75,36 @@ bagSelect <- function(input, output, session, bag){
   # Reset filter
   observeEvent(input$btn_reset_bag, ignoreInit = TRUE, {
 
-    update_autocomplete_input(session, "sel_huisnummerhuisletter",
-                              value = "")
+    updateSelectizeInput(session, "sel_woonplaats",
+                         selected = character(0))
+
+    updateSelectizeInput(session, "sel_huisnummerhuisletter",
+                              selected = "")
 
     update_autocomplete_input(session, "sel_openbareruimtenaam",
                               value = "")
-
 
   })
 
 
   bag_selection <- reactive({
 
-    req(input$sel_openbareruimtenaam)
-    req(input$sel_huisnummerhuisletter)
+    straat <- input$sel_openbareruimtenaam
+    hhl <- input$sel_huisnummerhuisletter
 
-    dplyr::filter(bag,
+    if(is_empty(straat) | is_empty(hhl)){
+      return(NULL)
+    }
+
+    out <- dplyr::filter(bag,
                   openbareruimtenaam == !!input$sel_openbareruimtenaam,
                   huisnummerhuisletter == !!input$sel_huisnummerhuisletter)
+
+    if(nrow(out) == 0){
+      return(NULL)
+    } else {
+      return(out)
+    }
 
   })
 

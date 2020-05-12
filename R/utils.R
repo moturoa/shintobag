@@ -2,14 +2,11 @@
 has_num <- function(x)grepl("[0-9]", x)
 
 
-is.empty <- function(x){
-  is.na(x) || is.null(x) || length(x) == 0 || x == ""
+is_empty <- function(x){
+  is.null(x) || is.na(x) || length(x) == 0 || x == ""
 }
 
 
-del.empty <- function(x){
-  x[!sapply(x,is.empty)]
-}
 
 emp <- function(x)ifelse(is.na(x), "", as.character(x))
 
