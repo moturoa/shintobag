@@ -205,7 +205,8 @@ download_gemeente_opendata <- function(gemeente, out_path = ".", re_download = T
 
     bag <- bag %>%
       sf::st_join(dplyr::select(geo$buurten, buurt_naam = bu_naam)) %>%
-      sf::st_join(dplyr::select(geo$wijken, wijk_naam = wk_naam))
+      sf::st_join(dplyr::select(geo$wijken, wijk_naam = wk_naam)) %>%
+      add_bag_adres_kolommen()
 
     # sf-spatial
 
