@@ -7,9 +7,16 @@ bagSelectUI <- function(id){
   ns <- NS(id)
 
   tagList(
-    selectInput(ns("sel_woonplaats"), "Woonplaats", choices = NULL, multiple = FALSE),
-    autocomplete_input(ns("sel_openbareruimtenaam"), "Straat", options = NULL, max_options = 100),
-    selectInput(ns("sel_huisnummerhuisletter"), "Huisnummer", choices = NULL), #, max_options = 100),
+    selectInput(ns("sel_woonplaats"),
+                label_tooltip("Woonplaats", "Selecteer eerst de woonplaats"),
+                              choices = NULL, multiple = FALSE),
+    autocomplete_input(ns("sel_openbareruimtenaam"),
+                       label_tooltip("Straat", paste("Typ de eerste letter van de straatnaam",
+                                                     "om de opties te zien.",
+                                                     "Zie je niks? Dan is er geen straat met",
+                                                     "die naam in deze woonplaats")),
+                       options = NULL, max_options = 100),
+    selectizeInput(ns("sel_huisnummerhuisletter"), "Huisnummer", choices = NULL),
     tags$div(style = "padding-top: 25px; ",
              actionButton(ns("btn_reset_bag"), "Reset",
                           icon = icon("refresh"),
@@ -28,14 +35,6 @@ bagSelect <- function(input, output, session, bag){
   if(!all(c("huisnummerhuisletter","bag_adres") %in% names(bag))){
     stop("BAG moet bewerkt worden met add_bag_adres_kolommen()")
   }
-
-  # Zet achtergrond kleur van de autocomplete_select (default is lelijk geel)
-  # handige truc (https://stackoverflow.com/questions/57367387/how-to-define-css-for-elements-inside-shiny-modules)
-  # nu dat dit in een package staat kan het ook in een gebundelde CSS
-  css_auto_option <- paste0("$('head').append('<style type=\"text/css\">",
-                            ".autocomplete-items div:hover{background-color: #EDEDED;}",
-                            "</style>');")
-  shinyjs::runjs(css_auto_option)
 
   updateSelectizeInput(session, "sel_woonplaats",
                        choices = sort(unique(bag$woonplaatsnaam)),
@@ -67,7 +66,7 @@ bagSelect <- function(input, output, session, bag){
 
     updateSelectizeInput(session, "sel_huisnummerhuisletter",
                          choices = c("", sort_leading_num(bag_straat$huisnummerhuisletter)),
-                         selected = character(0), server = TRUE)
+                         selected = character(0))
 
   })
 
@@ -79,7 +78,7 @@ bagSelect <- function(input, output, session, bag){
                          selected = character(0))
 
     updateSelectizeInput(session, "sel_huisnummerhuisletter",
-                              selected = "")
+                              selected = character(0))
 
     update_autocomplete_input(session, "sel_openbareruimtenaam",
                               value = "")
@@ -97,8 +96,8 @@ bagSelect <- function(input, output, session, bag){
     }
 
     out <- dplyr::filter(bag,
-                  openbareruimtenaam == !!input$sel_openbareruimtenaam,
-                  huisnummerhuisletter == !!input$sel_huisnummerhuisletter)
+                  openbareruimtenaam == !!straat,
+                  huisnummerhuisletter == !!hhl)
 
     if(nrow(out) == 0){
       return(NULL)
