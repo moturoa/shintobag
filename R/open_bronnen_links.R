@@ -19,11 +19,14 @@ google_streetview_url <- function(d,
 
   arrangement <- match.arg(arrangement)
 
-  glue::glue("http://maps.google.com/maps?q=&",
+  tryCatch(
+    as.character(glue::glue("http://maps.google.com/maps?q=&",
              "layer=c&",
              "cbll={latitude},{longitude}&",
-             "cbp={arrangement},{rotation_angle},{tilt_angle},{zoom_level},{pitch}") %>%
-    as.character()
+             "cbp={arrangement},{rotation_angle},{tilt_angle},{zoom_level},{pitch}")) %>%
+    as.character(),
+    error = function(e)"Link niet beschikbaar"
+  )
 }
 
 
@@ -31,7 +34,10 @@ google_streetview_url <- function(d,
 #' @param id pandid, adresseerbaarobject, of nummeraanduiding uit het BAG (chr)
 #' @export
 bagviewer_url <- function(id){
-  glue::glue("https://bagviewer.kadaster.nl/lvbag/bag-viewer/index.html#?searchQuery={id}")
+  tryCatch(
+    as.character(glue::glue("https://bagviewer.kadaster.nl/lvbag/bag-viewer/index.html#?searchQuery={id}")),
+    error = function(e)"Link niet beschikbaar"
+  )
 }
 
 
@@ -39,7 +45,11 @@ bagviewer_url <- function(id){
 #' @param d Een rij uit het BAG (sf-dataframe)
 #' @export
 google_search_url <- function(d){
-  glue::glue("https://www.google.com/search?q='{d$bag_adres_full}'")
+  if(!"bag_adres_full" %in% names(d)){
+    d$bag_adres_full <- paste(d$openbareruimtenaam, d$huisnummer, d$woonplaatsnaam)
+  }
+  tryCatch(as.character(glue::glue('https://www.google.com/search?q="{d$bag_adres_full}"')),
+           error = function(e)"Link niet beschikbaar")
 }
 
 
@@ -55,7 +65,7 @@ externe_bronnen_lokatie <- function(d){
 
   withTags(
     div(class = "box_externe_bronnen",
-      a(href=google_streetview_url(d),
+      a(href = utils::URLencode(google_streetview_url(d)),
         HTML("Google Streetview <i class='fa fa-external-link'></i>"),
         target="_blank"),
       br(),
@@ -63,17 +73,18 @@ externe_bronnen_lokatie <- function(d){
       #   HTML("Ruimtelijke Plannen <i class='fa fa-external-link'></i>"),
       #   target="_blank"),
       # br(),
-      a(href=bagviewer_url(d$pandid),
+      a(href = utils::URLencode(bagviewer_url(d$pandid)),
         HTML("BAG Viewer (Pand) <i class='fa fa-external-link'></i>"),
         target="_blank"),
       br(),
-      a(href=bagviewer_url(d$adresseerbaarobject),
+      a(href = utils::URLencode(bagviewer_url(d$adresseerbaarobject)),
         HTML("BAG Viewer (Adresseerbaar Object) <i class='fa fa-external-link'></i>"),
         target="_blank"),
       br(),
-      a(href = google_search_url(d),
+      a(href = utils::URLencode(google_search_url(d)),
         HTML("Google Zoeken <i class='fa fa-external-link'></i>"),
-        target="_blank")
+        target="_blank"),
+      br()
     )
   )
 
