@@ -72,7 +72,8 @@ add_bag_adres_kolommen <- function(data){
                  bag_adres = stringr::str_trim( paste0(openbareruimtenaam, " ",
                                                        huisnummer,
                                                        huisletter,
-                                                       huisnummertoevoeging))
+                                                       huisnummertoevoeging)),
+                bag_adres_full = paste(bag_adres, woonplaatsnaam)
             )
 
 }

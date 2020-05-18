@@ -2,14 +2,14 @@
 #' Bag Select Module
 #' @rdname bagselect
 #' @export
-bagSelectUI <- function(id){
+bagSelectUI <- function(id, woonplaats_multiple = FALSE){
 
   ns <- NS(id)
 
   tagList(
     selectInput(ns("sel_woonplaats"),
                 label_tooltip("Woonplaats", "Selecteer eerst de woonplaats"),
-                              choices = NULL, multiple = FALSE),
+                              choices = NULL, multiple = woonplaats_multiple),
     autocomplete_input(ns("sel_openbareruimtenaam"),
                        label_tooltip("Straat", paste("Typ de eerste letter van de straatnaam",
                                                      "om de opties te zien.",
