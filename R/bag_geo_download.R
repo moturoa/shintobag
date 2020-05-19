@@ -78,9 +78,16 @@ add_bag_adres_kolommen <- function(data){
 
 }
 
+# Util
+project_cbs_geo <- function(x){
+  x %>%
+    st_set_crs(28992) %>%
+    st_transform(4326)
+}
 
-# Get one geo at a time.
-# (don't export, see get_gemeente_geo below.)
+
+#' @rdname get_gemeente_geo
+#' @export
 get_geo <- function(gemeente = NULL,
                     what = c("grens","buurten","wijken"),
                     con = NULL, ...){
@@ -103,35 +110,13 @@ get_geo <- function(gemeente = NULL,
 }
 
 
-project_cbs_geo <- function(x){
-  x %>%
-    st_set_crs(28992) %>%
-    st_transform(4326)
-}
-
-
-get_gemeente_grens <- function(gemeente, con = NULL, ...){
-
-  get_geo(gemeente, what = "grens", con = con, ...)
-
-}
-
-get_wijken <- function(gemeente, con = NULL, ...){
-
-  get_geo(gemeente, what = "wijken", con = con, ...)
-
-}
-
-get_buurten <- function(gemeente, con = NULL, ...){
-
-  get_geo(gemeente, what = "buurten", con = con, ...)
-
-}
-
-
-
 #' Download Buurt, Wijk, Gemeente grenzen.
-#' @description Downloads from the CSB database. Entry 'CBS' must be present in config file.
+#' @description Download gemeente, wijk, en buurt grenzen uit de CBS Wijk/Buurt kaart.
+#' @details De config moet 'CBS' connectie details bevatten.
+#' @param gemeente Gemeentenaam
+#' @param what Voor \code{get_geo}, "buurten", "wijken", of "grens"
+#' @param con Connectie naar de CBS database (als leeg, wordt automatisch aangemaakt)
+#' @rdname get_gemeente_geo
 #' @export
 get_gemeente_geo <- function(gemeente, ...){
 
@@ -151,6 +136,79 @@ get_gemeente_geo <- function(gemeente, ...){
 }
 
 
+#' Zoek data binnen een polygon
+#' @details Voor geavanceerd gebruik.
+#' @param polygon Sf-kolom, projectie 28992
+#' @param con Database connectie
+#' @param table Naam van de table, inclusief schema ("latest.adres")
+#' @param geocolumn Naam van de kolom met geo-info in de tabel
+#' @param min_overlap Voor polygonen, alleen diegene die minstens met min_overlap overlappen met de zoek polygoon
+#' @param st_function Een van 3 spatial predicates
+#' @export
+get_data_polygon <- function(polygon,
+                             con,
+                             table,
+                             geocolumn,
+                             min_overlap = 0.9,
+                             st_function = c("st_intersects","st_overlaps","st_contains")){
+
+  st_function <- match.arg(st_function)
+
+  polygon_txt <- sf::st_as_text(polygon)
+
+  out <- st_read(con,
+                 query = glue("select * from {table} as geodata",
+                              " where {st_function}(ST_GeomFromText('{polygon_txt}', 28992),",
+                              " geodata.{geocolumn})"))
+
+  # Zet projectie, in sommige gevallen ontbreekt deze.
+  if(is.na(st_crs(out))){
+    out <- st_set_crs(out, 28992)
+  }
+
+  # Verwijder zeer grote polygonen (in sommige tabellen wordt de bounding box meegegeven)
+  are <- as.numeric(sf::st_area(out[[geocolumn]]))
+  out <- out[are < 10^9,]
+
+  if(unique(st_geometry_type(out[[geocolumn]]))[1] != "POINT"){
+
+    # Vind (weer!) de intersecting polygons.
+    # Soms vind PostGIS intersecting polygons waarvan sf vindt dat ze niet intersecten.
+    # Dan werkt de minimum overlap methode niet. Hier fixen.
+    which_intersect <- as.numeric(st_intersects(polygon, out)[[1]])
+    out <- out[which_intersect,]
+
+    # Verwijder minimaal overlappende polygonen
+    overl_fraction <- as.numeric(st_area(st_intersection(polygon, out)) / st_area(out))
+    out <- out[overl_fraction > min_overlap, ]
+
+  }
+
+  out
+
+}
+
+
+#' Download de woonkernen (bebouwde kommen) voor een gemeente
+#' @description Download woonkernen uit de Top10nl database.
+#' @param grens Een polygoon (projectie 4326) waarbinnen de woonkernen gezocht worden
+#' @examples
+#' grens <- get_geo("Nederweert", "grens")
+#' @export
+get_woonkernen <- function(grens, ...){
+
+  con <- shinto_db_connection("top10nl", ...)
+  on.exit(dbDisconnect(con))
+
+  out <- get_data_polygon(polygon = st_transform(grens$geom, 28992),
+                          con = con,
+                          table = "latest.plaats",
+                          geocolumn = "geometrie_multivlak",
+                          st_function = "st_intersects")
+
+  dplyr::filter(out, bebouwdekom == "ja")
+
+}
 
 #' Row-bind geo objects
 #' @description Combine multiple geo objects into a single one. Geo objects are read with
@@ -187,6 +245,7 @@ rbind_geo <- function(lis){
 #'  with components: wijken, buurten, grens.
 #' @param gemeente E.g. "Eindhoven"
 #' @param out_path The relative path to write the datasets to.
+#' @export
 download_gemeente_opendata <- function(gemeente, out_path = ".", re_download = TRUE){
 
   fn_geo <- file.path(out_path, paste0("geo_", gemeente, ".rds"))
