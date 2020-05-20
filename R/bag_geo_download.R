@@ -1,17 +1,32 @@
 
 #' Make a database connection
 #' @description Make a connection with RPostgres to one of the Shinto Labs databases.
+#' @param what Welke database connectie in het config bestand? (bv. "BAGdata")
+#' @param file Lokatie van het config bestand, normaal gezet via `options(shintobag_conf = /path/to/file)`
+#' @param pool Logical. Als TRUE, gebruikt `pool::dbPool`, anders `DBI::dbConnect`
 #' @export
-shinto_db_connection <- function(what, file = getOption("shintobag_conf", "conf/config.yml")){
+shinto_db_connection <- function(what,
+                                 file = getOption("shintobag_conf", "conf/config.yml"),
+                                 pool = FALSE){
 
   conf <- config::get(what, file = file)
 
-  DBI::dbConnect(RPostgres::Postgres(),
-            dbname = conf$dbname,
-            host = conf$dbhost,
-            port = 5432,
-            user = conf$dbuser,
-            password = conf$dbpassword)
+  if(!pool){
+    DBI::dbConnect(RPostgres::Postgres(),
+                   dbname = conf$dbname,
+                   host = conf$dbhost,
+                   port = 5432,
+                   user = conf$dbuser,
+                   password = conf$dbpassword)
+  } else {
+    pool::dbPool(RPostgres::Postgres(),
+                   dbname = conf$dbname,
+                   host = conf$dbhost,
+                   port = 5432,
+                   user = conf$dbuser,
+                   password = conf$dbpassword)
+  }
+
 }
 
 
@@ -78,12 +93,43 @@ add_bag_adres_kolommen <- function(data){
 
 }
 
-# Util
+
+
+
+
+#' Projecteer data naar lat/long (WG84)
+#' @description Projecteert naar EPS 4326, voor gebruik in leaflet. Werkt ook voor lege spatial columns,
+#' waar `st_transform` moeite mee heeft. Voor polygonen, haalt ook de z-as weg (anders werkt leaflet niet).
+#' @export
+proj_4326 <- function(data){
+
+  if(length(data) == 0 || all(st_is_empty(data))){
+    return(data)
+  }
+
+  if(st_geometry_type(data)[1] == "POLYGON"){
+
+    if(is.null(dim(data))){
+      data <- st_zm(data)
+    } else {
+      col <- names(data)[sapply(data, function(x)inherits(x, "sfc_POLYGON"))][1]
+
+      data[[col]] <- st_zm(data[[col]])
+    }
+
+  }
+
+  st_transform(data, 4326)
+}
+
+
+# Util - geen export.
 project_cbs_geo <- function(x){
   x %>%
     st_set_crs(28992) %>%
     st_transform(4326)
 }
+
 
 
 #' @rdname get_gemeente_geo
@@ -185,6 +231,56 @@ get_data_polygon <- function(polygon,
   }
 
   out
+
+}
+
+#' Download het perceel voor een geo-punt
+#' @description Vind het perceel uit het Kadaster waarbinnen het geo-punt valt.
+#' Resultaat is in 28992 projectie.
+#' @param pnt sfc, bv. bag$geopunt
+#' @param con Optioneel, anders "kadaster" (get_perceel_pand) of "BAGdata" (get_panden_perceel)
+#' in het config bestand.
+#' @export
+#' @rdname get_perceel
+get_perceel_geopunt <- function(pnt, con = NULL, ...){
+
+  if(is.null(con)){
+    con <- shinto_db_connection("kadaster", ...)
+    on.exit(dbDisconnect(con))
+  }
+
+  if(st_crs(pnt) == st_crs(4326)){
+    pnt <- st_transform(pnt, 28992)
+  }
+
+  pnt_txt <- sf::st_as_text(pnt)
+
+  st_read(con,
+          query = glue("SELECT * FROM latest.perceel AS perceel ",
+                       "WHERE ST_Contains(perceel.begrenzing, ST_GeomFromText('{pnt_txt}', 28992))"))
+
+}
+
+
+#' Vind alle panden op een perceel
+#' @description Download alle panden uit het BAG op een perceel.
+#' @param perceel Geovlak van het perceel (uit het Kadaster, typisch gelezen met get_perceel_geopunt)
+#' @param min_overlap Zorgt ervoor dat panden die slechts het perceel raken (of door meetfouten net
+#' in het perceel liggen) niet worden meegenomen.
+#' @export
+#' @rdname get_perceel
+get_panden_perceel <- function(perceel, min_overlap = 0.9, con = NULL, ...){
+
+  if(is.null(con)){
+    con <- shinto_db_connection("BAGdata", ...)
+    on.exit(dbDisconnect(con))
+  }
+
+  out <- get_data_polygon(perceel, con, "bagactueel.pand", "geovlak")
+
+  # Als einddatumtijdvakgeldigheid niet NA is, dan is deze rij niet meer geldig.
+  dplyr::filter(out, is.na(einddatumtijdvakgeldigheid)) %>%
+    mutate(pandoppervlakte = round(as.numeric(st_area(geovlak)),1))
 
 }
 
