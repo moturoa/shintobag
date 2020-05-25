@@ -5,9 +5,9 @@
 \alias{bagSelect}
 \title{Bag Select Module}
 \usage{
-bagSelectUI(id, woonplaats_multiple = FALSE)
+bagSelectUI(id, woonplaats_multiple = FALSE, reset_button = TRUE)
 
-bagSelect(input, output, session, bag)
+bagSelect(input, output, session, bag, reset_button = NULL)
 }
 \description{
 Bag Select Module

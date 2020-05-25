@@ -2,7 +2,7 @@
 #' Bag Select Module
 #' @rdname bagselect
 #' @export
-bagSelectUI <- function(id, woonplaats_multiple = FALSE){
+bagSelectUI <- function(id, woonplaats_multiple = FALSE, reset_button = TRUE){
 
   ns <- NS(id)
 
@@ -17,11 +17,14 @@ bagSelectUI <- function(id, woonplaats_multiple = FALSE){
                                                      "die naam in deze woonplaats")),
                        options = NULL, max_options = 100),
     selectizeInput(ns("sel_huisnummerhuisletter"), "Huisnummer", choices = NULL),
-    tags$div(style = "padding-top: 25px; ",
-             actionButton(ns("btn_reset_bag"), "Reset",
-                          icon = icon("refresh"),
-                          class = "btn-info btn-sm bag_reset_btn")
-    )
+    if(reset_button){
+      tags$div(style = "padding-top: 25px; ",
+               actionButton(ns("btn_reset_bag"), "Reset",
+                            icon = icon("refresh"),
+                            class = "btn-info btn-sm bag_reset_btn")
+      )
+    } else NULL
+
   )
 
 }
@@ -29,7 +32,7 @@ bagSelectUI <- function(id, woonplaats_multiple = FALSE){
 
 #' @rdname bagselect
 #' @export
-bagSelect <- function(input, output, session, bag){
+bagSelect <- function(input, output, session, bag, reset_button = NULL){
 
 
   if(!all(c("huisnummerhuisletter","bag_adres") %in% names(bag))){
@@ -71,19 +74,20 @@ bagSelect <- function(input, output, session, bag){
   })
 
 
-  # Reset filter
-  observeEvent(input$btn_reset_bag, ignoreInit = TRUE, {
-
+  reset_filters <- function(){
     updateSelectizeInput(session, "sel_woonplaats",
                          selected = character(0))
 
     updateSelectizeInput(session, "sel_huisnummerhuisletter",
-                              selected = character(0))
+                         selected = character(0))
 
     update_autocomplete_input(session, "sel_openbareruimtenaam",
                               value = "")
+  }
 
-  })
+  # Reset filter
+  observeEvent(input$btn_reset_bag, ignoreInit = TRUE,  reset_filters())
+  observeEvent(reset_button(), ignoreInit = TRUE,  reset_filters())
 
 
   bag_selection <- reactive({
