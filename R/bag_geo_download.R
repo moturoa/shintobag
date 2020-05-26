@@ -216,7 +216,7 @@ get_data_polygon <- function(polygon,
   are <- as.numeric(sf::st_area(out[[geocolumn]]))
   out <- out[are < 10^9,]
 
-  if(unique(st_geometry_type(out[[geocolumn]]))[1] != "POINT"){
+  if(isTRUE(unique(st_geometry_type(out[[geocolumn]]))[1] != "POINT")){
 
     # Vind (weer!) de intersecting polygons.
     # Soms vind PostGIS intersecting polygons waarvan sf vindt dat ze niet intersecten.

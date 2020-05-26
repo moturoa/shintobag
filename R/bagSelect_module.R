@@ -30,9 +30,15 @@ bagSelectUI <- function(id, woonplaats_multiple = FALSE, reset_button = TRUE){
 }
 
 
+
+
+
 #' @rdname bagselect
 #' @export
-bagSelect <- function(input, output, session, bag, reset_button = NULL){
+bagSelect <- function(input, output, session, bag,
+                      reset_button = NULL,
+                      enkel_adres = TRUE
+                      ){
 
 
   if(!all(c("huisnummerhuisletter","bag_adres") %in% names(bag))){
@@ -92,16 +98,18 @@ bagSelect <- function(input, output, session, bag, reset_button = NULL){
 
   bag_selection <- reactive({
 
+    woonpl <- input$sel_woonplaats
     straat <- input$sel_openbareruimtenaam
     hhl <- input$sel_huisnummerhuisletter
 
-    if(is_empty(straat) | is_empty(hhl)){
+    if(enkel_adres && (is_empty(straat) | is_empty(hhl))){
       return(NULL)
     }
 
-    out <- dplyr::filter(bag,
-                  openbareruimtenaam == !!straat,
-                  huisnummerhuisletter == !!hhl)
+    out <- bag %>%
+      filter_in("woonplaatsnaam", woonpl) %>%
+      filter_in("openbareruimtenaam", straat) %>%
+      filter_in("huisnummerhuisletter", hhl)
 
     if(nrow(out) == 0){
       return(NULL)

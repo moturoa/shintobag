@@ -33,6 +33,16 @@ first_nonempty_value <- function(x){
   return(out)
 }
 
+filter_in <- function(data, x, values, all_value = ""){
+
+  if(is.null(values) | identical(values, all_value)){
+    return(data)
+  }
+  x <- sym(x)
+  filter(data, !!x %in% values)
+
+}
+
 
 # Sorteer tekst op numerieke deel (prefix),
 # dus: 1, 1A, 2, 3, 10, niet
