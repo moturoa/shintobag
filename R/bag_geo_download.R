@@ -276,7 +276,8 @@ get_panden_perceel <- function(perceel, min_overlap = 0.9, con = NULL, ...){
     on.exit(dbDisconnect(con))
   }
 
-  out <- get_data_polygon(perceel, con, "bagactueel.pand", "geovlak")
+  out <- get_data_polygon(perceel, con, "bagactueel.pand", "geovlak",
+                          min_overlap = min_overlap)
 
   # Als einddatumtijdvakgeldigheid niet NA is, dan is deze rij niet meer geldig.
   dplyr::filter(out, is.na(einddatumtijdvakgeldigheid)) %>%
