@@ -7,6 +7,7 @@
 shinto_db_connection(
   what,
   file = getOption("shintobag_conf", "conf/config.yml"),
+  port = 5432,
   pool = FALSE
 )
 }

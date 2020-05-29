@@ -7,6 +7,7 @@
 #' @export
 shinto_db_connection <- function(what,
                                  file = getOption("shintobag_conf", "conf/config.yml"),
+                                 port = 5432,
                                  pool = FALSE){
 
   conf <- config::get(what, file = file)
@@ -15,14 +16,14 @@ shinto_db_connection <- function(what,
     DBI::dbConnect(RPostgres::Postgres(),
                    dbname = conf$dbname,
                    host = conf$dbhost,
-                   port = 5432,
+                   port = port,
                    user = conf$dbuser,
                    password = conf$dbpassword)
   } else {
     pool::dbPool(RPostgres::Postgres(),
                    dbname = conf$dbname,
                    host = conf$dbhost,
-                   port = 5432,
+                   port = port,
                    user = conf$dbuser,
                    password = conf$dbpassword)
   }
@@ -53,7 +54,7 @@ get_bag <- function(gemeente, con = NULL, ...){
   }
 
   if(is.null(con)){
-    con <- shinto_db_connection("BAGdata", ...)
+    con <- shinto_db_connection("data_bag", ...)
     on.exit(dbDisconnect(con))
   }
 
@@ -139,7 +140,7 @@ get_geo <- function(gemeente = NULL,
                     con = NULL, ...){
 
   if(is.null(con)){
-    con <- shinto_db_connection("CBS", ...)
+    con <- shinto_db_connection("data_cbs", ...)
     on.exit(dbDisconnect(con))
   }
 
@@ -158,7 +159,7 @@ get_geo <- function(gemeente = NULL,
 
 #' Download Buurt, Wijk, Gemeente grenzen.
 #' @description Download gemeente, wijk, en buurt grenzen uit de CBS Wijk/Buurt kaart.
-#' @details De config moet 'CBS' connectie details bevatten.
+#' @details De config moet 'data_cbs' connectie details bevatten (naar de CBS database).
 #' @param gemeente Gemeentenaam
 #' @param what Voor \code{get_geo}, "buurten", "wijken", of "grens"
 #' @param con Connectie naar de CBS database (als leeg, wordt automatisch aangemaakt)
@@ -166,7 +167,7 @@ get_geo <- function(gemeente = NULL,
 #' @export
 get_gemeente_geo <- function(gemeente, ...){
 
-  cbs <- shinto_db_connection("CBS", ...)
+  cbs <- shinto_db_connection("data_cbs", ...)
   on.exit(dbDisconnect(cbs))
 
   out <- list(
@@ -245,7 +246,7 @@ get_data_polygon <- function(polygon,
 get_perceel_geopunt <- function(pnt, con = NULL, ...){
 
   if(is.null(con)){
-    con <- shinto_db_connection("kadaster", ...)
+    con <- shinto_db_connection("data_brk", ...)
     on.exit(dbDisconnect(con))
   }
 
@@ -272,7 +273,7 @@ get_perceel_geopunt <- function(pnt, con = NULL, ...){
 get_panden_perceel <- function(perceel, min_overlap = 0.9, con = NULL, ...){
 
   if(is.null(con)){
-    con <- shinto_db_connection("BAGdata", ...)
+    con <- shinto_db_connection("data_bag", ...)
     on.exit(dbDisconnect(con))
   }
 
@@ -294,7 +295,7 @@ get_panden_perceel <- function(perceel, min_overlap = 0.9, con = NULL, ...){
 #' @export
 get_woonkernen <- function(grens, ...){
 
-  con <- shinto_db_connection("top10nl", ...)
+  con <- shinto_db_connection("data_top10nl", ...)
   on.exit(dbDisconnect(con))
 
   out <- get_data_polygon(polygon = st_transform(grens$geom, 28992),
@@ -366,7 +367,6 @@ download_gemeente_opendata <- function(gemeente, out_path = ".", re_download = T
       add_bag_adres_kolommen()
 
     # sf-spatial
-
     saveRDS(bag, fn_bag_1)
 
     # tibble, feather

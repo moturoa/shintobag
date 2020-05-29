@@ -25,5 +25,5 @@ get_gemeente_geo(gemeente, ...)
 Download gemeente, wijk, en buurt grenzen uit de CBS Wijk/Buurt kaart.
 }
 \details{
-De config moet 'CBS' connectie details bevatten.
+De config moet 'data_cbs' connectie details bevatten (naar de CBS database).
 }
