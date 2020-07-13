@@ -165,8 +165,8 @@ fuzzy_find <- function(x, y){
     mindist <- min(cand_dist)
     mtch <- unique(candidates[cand_dist == mindist])
 
-    return(list(match = mtch[1],
-                distance = mindist[1]))
+    return(dplyr::bind_rows(list(match = mtch[1],
+                distance = mindist[1])))
 
   } else {
     dplyr::bind_rows(lapply(x, fuzzy_find, y = y))

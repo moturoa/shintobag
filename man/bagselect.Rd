@@ -7,7 +7,15 @@
 \usage{
 bagSelectUI(id, woonplaats_multiple = FALSE, reset_button = TRUE)
 
-bagSelect(input, output, session, bag, reset_button = NULL, enkel_adres = TRUE)
+bagSelect(
+  input,
+  output,
+  session,
+  bag,
+  reset_button = reactive(NULL),
+  enkel_adres = TRUE,
+  allow_null_woonplaats = TRUE
+)
 }
 \description{
 Bag Select Module

@@ -36,8 +36,9 @@ bagSelectUI <- function(id, woonplaats_multiple = FALSE, reset_button = TRUE){
 #' @rdname bagselect
 #' @export
 bagSelect <- function(input, output, session, bag,
-                      reset_button = NULL,
-                      enkel_adres = TRUE
+                      reset_button = reactive(NULL),
+                      enkel_adres = TRUE,
+                      allow_null_woonplaats = TRUE
                       ){
 
 
@@ -48,6 +49,12 @@ bagSelect <- function(input, output, session, bag,
   updateSelectizeInput(session, "sel_woonplaats",
                        choices = sort(unique(bag$woonplaatsnaam)),
                        selected = "")
+
+  if(allow_null_woonplaats){
+    update_autocomplete_input(session, "sel_openbareruimtenaam",
+                              options = c("", sort(unique(bag$openbareruimtenaam))),
+                              value = "")
+  }
 
   observe({
 
@@ -87,8 +94,15 @@ bagSelect <- function(input, output, session, bag,
     updateSelectizeInput(session, "sel_huisnummerhuisletter",
                          selected = character(0))
 
-    update_autocomplete_input(session, "sel_openbareruimtenaam",
-                              value = "")
+    if(allow_null_woonplaats){
+      update_autocomplete_input(session, "sel_openbareruimtenaam",
+                                options = c("", sort(unique(bag$openbareruimtenaam))),
+                                value = "")
+    } else {
+      update_autocomplete_input(session, "sel_openbareruimtenaam",
+                                value = "")
+    }
+
   }
 
   # Reset filter
@@ -107,9 +121,13 @@ bagSelect <- function(input, output, session, bag,
     }
 
     out <- bag %>%
-      filter_in("woonplaatsnaam", woonpl) %>%
       filter_in("openbareruimtenaam", straat) %>%
       filter_in("huisnummerhuisletter", hhl)
+
+    if(!is.null(woonpl)){
+      out <- filter_in(out, "woonplaatsnaam", woonpl)
+    }
+
 
     if(nrow(out) == 0){
       return(NULL)

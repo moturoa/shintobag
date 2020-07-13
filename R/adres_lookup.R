@@ -141,6 +141,7 @@ match_bag_address <- function(x, bag, bag_columns = "all"){
     tolower %>% no_space
 
   ff <- fuzzy_find(txt_, find_)
+  if(!is_tibble(ff))ff <- bind_rows(ff)  # bug fix met 1 record
 
   # adressen zonder huisnummer moeten NA zijn
   ff[!grepl("[0-9]", txt_), ] <- NA
