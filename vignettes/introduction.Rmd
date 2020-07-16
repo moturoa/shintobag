@@ -1,0 +1,85 @@
+---
+title: "introduction"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{introduction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, include = FALSE}
+library(shintobag)
+```
+
+# Installatie
+
+Je moet toegang hebben op de repos. http://bitbucket.org/shintolabs/shintobag. Gebruik dan `remotes` om de package te installeren.
+
+```{r eval = FALSE}
+remotes::install_bitbucket("shintolabs/shintobag", auth_user = "YOU", password = "PASS")
+```
+
+
+
+# Configuratie
+
+Om `shintobag` te kunnen gebruiken moet je een YML bestand toevoegen, dat uit 1Password gedownload kan worden ("YAML BAG/CBS/Kadaster Config").
+
+Plaats dit bestand in een (gebruiker) folder, en zet 1 keer per sessie de `options` :
+
+```{r}
+library(shintobag)
+options(shintobag_conf = "/path/to/config.yml")
+```
+
+Als alternatief kun je `config.yml` ook plaatsen in `conf/` in de huidige working directory (dit is de default lokatie).
+
+
+# Open data downloaden
+
+Met `download_gemeente_opendata` kun je open bronnen downloaden voor een gekozen gemeente, namelijk:
+
+- Extract uit de BAG database, tabel 'adres'. Adressen, punt lokaties, enkele beschrijvende kolommen (pand oppervlakte, pand bouwjaar), en identificatie velden (adresseerbaarobject, pandobject). Deze tabel wordt in 2 varianten opgeslagen: `.feather` (geen ruimtelijke info, zeer snel formaat voor inlezen) en `.rds` (een sf-dataframe, met punt lokatie kolom, handig om direct met bv. `leaflet` te gebruiken).
+- Gemeente, Wijk, en Buurt informatie. Uit de CBS database, meerdere tabellen. Deze extracten worden opgeslagen als bv. `geo_Eindhoven.rds`, een `list` met componenten `buurt` (CBS buurt tabel, inclusies standaard CBS kolommen), `wijk` (idem) en `grens` (de gemeente grens).
+
+Om de bestanden te downloaden doe je,
+
+```{r eval = FALSE}
+download_gemeente_opendata("Eindhoven", out_path = "open_data/", re_download = FALSE)
+```
+
+Dit kan enkele minuten duren.
+
+Hier worden de bestanden gedownload naar de folder 'open_data' in de huidige working directory. Het argument `re_download = FALSE` download de bestanden niet als ze al bestaan (pas op, default is TRUE).
+
+Om de bestanden in te lezen gebruik je:
+
+```{r eval = FALSE}
+bag <- arrow::read_feather("open_data/bag_Eindhoven.feather")
+bag_spatial <- readRDS("open_data/bag_Eindhoven_sf.rds")
+geo <- readRDS("open_data/geo_Eindhoven.rds")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
