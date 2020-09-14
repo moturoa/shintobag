@@ -7,7 +7,8 @@
 get_woonkernen(grens, ...)
 }
 \arguments{
-\item{grens}{Een polygoon (projectie 4326) waarbinnen de woonkernen gezocht worden}
+\item{grens}{Een polygoon (projectie 4326 of 28992, wordt automatisch geconverteerd),
+waarbinnen de woonkernen gezocht worden.}
 }
 \description{
 Download woonkernen uit de Top10nl database.

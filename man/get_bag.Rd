@@ -6,6 +6,9 @@
 \usage{
 get_bag(gemeente, con = NULL, ...)
 }
+\arguments{
+\item{gemeente}{Bv. "Rozendaal"}
+}
 \description{
 Download the BAG for one Gemeente at a time. Result is an \code{sf} spatial dataframe.
 }

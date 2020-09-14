@@ -6,6 +6,9 @@
 \usage{
 add_bag_adres_kolommen(data)
 }
+\arguments{
+\item{data}{De BAG dataset (spatial (rds) of niet (feather)).}
+}
 \description{
 Combineert openbareruimtenaam, huisnummer, huisletter, huisnummertoevoeging
 in twee nieuwe kolommen: huisnummerhuisletter (12, 13B), en bag_adres (bv. Huisstraat 1A 12, Schoolplein 1).

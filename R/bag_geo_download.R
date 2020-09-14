@@ -1,13 +1,14 @@
 
 
-
+# Helper om SQL queries te formatteren.
+# Alles in shintobag werkt op gemeente niveau.
 make_sql <- function(dbname, gemeente = NULL){
 
   if(!is.null(gemeente)){
     sql <- glue::glue("select * from {dbname} where GM_NAAM = ?gem")
     DBI::sqlInterpolate(DBI::ANSI(), sql, gem = gemeente)
   } else {
-    glue("select * from {dbname}")
+    glue::glue("select * from {dbname}")
   }
 
 }
@@ -15,6 +16,7 @@ make_sql <- function(dbname, gemeente = NULL){
 
 #' Download the BAG
 #' @description Download the BAG for one Gemeente at a time. Result is an \code{sf} spatial dataframe.
+#' @param gemeente Bv. "Rozendaal"
 #' @export
 get_bag <- function(gemeente, con = NULL, ...){
 
@@ -24,13 +26,13 @@ get_bag <- function(gemeente, con = NULL, ...){
 
   if(is.null(con)){
     con <- shinto_db_connection("data_bag", ...)
-    on.exit(dbDisconnect(con))
+    on.exit(DBI::dbDisconnect(con))
   }
 
   sql <- "select * from bagactueel.adres_full where gemeentenaam = ?gem"
   sql <- sqlInterpolate(DBI::ANSI(), sql, gem = gemeente)
 
-  out <- st_read(con, query = sql) %>%
+  out <- sf::st_read(con, query = sql) %>%
     st_transform(crs = 4326)
 
   out
@@ -40,6 +42,7 @@ get_bag <- function(gemeente, con = NULL, ...){
 #' @description Combineert openbareruimtenaam, huisnummer, huisletter, huisnummertoevoeging
 #' in twee nieuwe kolommen: huisnummerhuisletter (12, 13B), en bag_adres (bv. Huisstraat 1A 12, Schoolplein 1).
 #' Vervangt ook NA met "" in huisnummer, huisletter, huisnummertoevoeging kolommen.
+#' @param data De BAG dataset (spatial (rds) of niet (feather)).
 #' @examples
 #' \dontrun{
 #'
@@ -94,6 +97,8 @@ proj_4326 <- function(data){
 
 
 # Util - geen export.
+# helper functie voor CBS tabellen, die hebben geen CRS info,
+# stellen we in, dan converteren
 project_cbs_geo <- function(x){
   x %>%
     st_set_crs(28992) %>%
@@ -110,7 +115,7 @@ get_geo <- function(gemeente = NULL,
 
   if(is.null(con)){
     con <- shinto_db_connection("data_cbs", ...)
-    on.exit(dbDisconnect(con))
+    on.exit(DBI::dbDisconnect(con))
   }
 
   what <- match.arg(what)
@@ -121,7 +126,7 @@ get_geo <- function(gemeente = NULL,
                buurten = "buurt_2018_v2",
   )
 
-  st_read(con, query = make_sql(tb, gemeente)) %>%
+  sf::st_read(con, query = make_sql(tb, gemeente)) %>%
     project_cbs_geo
 }
 
@@ -137,7 +142,7 @@ get_geo <- function(gemeente = NULL,
 get_gemeente_geo <- function(gemeente, ...){
 
   cbs <- shinto_db_connection("data_cbs", ...)
-  on.exit(dbDisconnect(cbs))
+  on.exit(DBI::dbDisconnect(cbs))
 
   out <- list(
     grens = get_geo(gemeente, "grens", con = cbs),
@@ -172,30 +177,28 @@ get_data_polygon <- function(polygon,
 
   polygon_txt <- sf::st_as_text(polygon)
 
-  out <- st_read(con,
+  out <- sf::st_read(con,
                  query = glue("select * from {table} as geodata",
                               " where {st_function}(ST_GeomFromText('{polygon_txt}', 28992),",
                               " geodata.{geocolumn})"))
 
-  # Zet projectie, in sommige gevallen ontbreekt deze.
-  if(is.na(st_crs(out))){
-    out <- st_set_crs(out, 28992)
-  }
+  # Zet projectie (wordt in principe meegeleverd maar niet altijd)
+  out <- sf::st_set_crs(out, 28992)
 
   # Verwijder zeer grote polygonen (in sommige tabellen wordt de bounding box meegegeven)
   are <- as.numeric(sf::st_area(out[[geocolumn]]))
   out <- out[are < 10^9,]
 
-  if(isTRUE(unique(st_geometry_type(out[[geocolumn]]))[1] != "POINT")){
+  if(isTRUE(unique(sf::st_geometry_type(out[[geocolumn]]))[1] != "POINT")){
 
     # Vind (weer!) de intersecting polygons.
     # Soms vind PostGIS intersecting polygons waarvan sf vindt dat ze niet intersecten.
     # Dan werkt de minimum overlap methode niet. Hier fixen.
-    which_intersect <- as.numeric(st_intersects(polygon, out)[[1]])
+    which_intersect <- as.numeric(sf::st_intersects(polygon, out)[[1]])
     out <- out[which_intersect,]
 
     # Verwijder minimaal overlappende polygonen
-    overl_fraction <- as.numeric(st_area(st_intersection(polygon, out)) / st_area(out))
+    overl_fraction <- as.numeric(sf::st_area(sf::st_intersection(polygon, out)) / sf::st_area(out))
     out <- out[overl_fraction > min_overlap, ]
 
   }
@@ -216,17 +219,15 @@ get_perceel_geopunt <- function(pnt, con = NULL, ...){
 
   if(is.null(con)){
     con <- shinto_db_connection("data_brk", ...)
-    on.exit(dbDisconnect(con))
+    on.exit(DBI::dbDisconnect(con))
   }
 
-  if(st_crs(pnt) == st_crs(4326)){
-    pnt <- st_transform(pnt, 28992)
-  }
-
+  # Transformeer punt, en WKT representatie om naar PostGIS te sturen.
+  pnt <- sf::st_transform(pnt, 28992)
   pnt_txt <- sf::st_as_text(pnt)
 
   st_read(con,
-          query = glue("SELECT * FROM latest.perceel AS perceel ",
+          query = glue::glue("SELECT * FROM latest.perceel AS perceel ",
                        "WHERE ST_Contains(perceel.begrenzing, ST_GeomFromText('{pnt_txt}', 28992))"))
 
 }
@@ -243,7 +244,7 @@ get_panden_perceel <- function(perceel, min_overlap = 0.9, con = NULL, ...){
 
   if(is.null(con)){
     con <- shinto_db_connection("data_bag", ...)
-    on.exit(dbDisconnect(con))
+    on.exit(DBI::dbDisconnect(con))
   }
 
   out <- get_data_polygon(perceel, con, "bagactueel.pand", "geovlak",
@@ -258,16 +259,19 @@ get_panden_perceel <- function(perceel, min_overlap = 0.9, con = NULL, ...){
 
 #' Download de woonkernen (bebouwde kommen) voor een gemeente
 #' @description Download woonkernen uit de Top10nl database.
-#' @param grens Een polygoon (projectie 4326) waarbinnen de woonkernen gezocht worden
+#' @param grens Een polygoon (projectie 4326 of 28992, wordt automatisch geconverteerd),
+#' waarbinnen de woonkernen gezocht worden.
 #' @examples
 #' grens <- get_geo("Nederweert", "grens")
 #' @export
 get_woonkernen <- function(grens, ...){
 
   con <- shinto_db_connection("data_top10nl", ...)
-  on.exit(dbDisconnect(con))
+  on.exit(DBI::dbDisconnect(con))
 
-  out <- get_data_polygon(polygon = st_transform(grens$geom, 28992),
+  grens <- st_transform(grens, 28992)
+
+  out <- get_data_polygon(polygon = grens,
                           con = con,
                           table = "latest.plaats",
                           geocolumn = "geometrie_multivlak",
@@ -323,6 +327,8 @@ download_gemeente_opendata <- function(gemeente, out_path = ".", re_download = T
   if(!file.exists(fn_geo) | re_download){
     geo <- get_gemeente_geo(gemeente)
     saveRDS(geo, fn_geo)
+  } else {
+    geo <- readRDS(fn_geo)
   }
 
 
@@ -330,10 +336,12 @@ download_gemeente_opendata <- function(gemeente, out_path = ".", re_download = T
   if(!file.exists(fn_bag_2) | re_download){
     bag <- get_bag(gemeente)
 
-    bag <- bag %>%
-      sf::st_join(dplyr::select(geo$buurten, buurt_naam = bu_naam)) %>%
-      sf::st_join(dplyr::select(geo$wijken, wijk_naam = wk_naam)) %>%
-      add_bag_adres_kolommen()
+    suppressMessages({
+      bag <- bag %>%
+        sf::st_join(dplyr::select(geo$buurten, buurt_naam = bu_naam)) %>%
+        sf::st_join(dplyr::select(geo$wijken, wijk_naam = wk_naam)) %>%
+        shintobag::add_bag_adres_kolommen()
+    })
 
     # sf-spatial
     saveRDS(bag, fn_bag_1)
@@ -354,13 +362,13 @@ download_gemeente_opendata <- function(gemeente, out_path = ".", re_download = T
 #' @export
 plot.gemeentegrenzen <- function(x, ...){
 
-  if(!require(leaflet))stop("Install leaflet first!")
+  if(!requireNamespace(leaflet))stop("Install leaflet first!")
 
-  leaflet() %>%
-    addTiles() %>%
-    addPolygons(data = x$grens, fill = FALSE, color = "black", weight = 1) %>%
-    addPolygons(data = x$buurten, fill = FALSE, color = "red", weight = 3) %>%
-    addPolygons(data = x$wijken, fill = FALSE, color = "blue", weight = 2)
+  leaflet::leaflet() %>%
+    leaflet::addTiles() %>%
+    leaflet::addPolygons(data = x$grens, fill = FALSE, color = "black", weight = 1) %>%
+    leaflet::addPolygons(data = x$buurten, fill = FALSE, color = "red", weight = 3) %>%
+    leaflet::addPolygons(data = x$wijken, fill = FALSE, color = "blue", weight = 2)
 }
 
 
