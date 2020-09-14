@@ -5,7 +5,12 @@
 \alias{bagSelect}
 \title{Bag Select Module}
 \usage{
-bagSelectUI(id, woonplaats_multiple = FALSE, reset_button = TRUE)
+bagSelectUI(
+  id,
+  woonplaats_multiple = FALSE,
+  reset_button = TRUE,
+  ui_straat = c("autocomplete", "selectInput")
+)
 
 bagSelect(
   input,
@@ -14,7 +19,8 @@ bagSelect(
   bag,
   reset_button = reactive(NULL),
   enkel_adres = TRUE,
-  allow_null_woonplaats = TRUE
+  allow_null_woonplaats = TRUE,
+  ui_straat = c("autocomplete", "selectInput")
 )
 }
 \description{
