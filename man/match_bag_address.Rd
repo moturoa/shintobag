@@ -4,7 +4,7 @@
 \alias{match_bag_address}
 \title{Match addresses to the BAG}
 \usage{
-match_bag_address(x, bag, bag_columns = "all")
+match_bag_address(x, ...)
 }
 \arguments{
 \item{x}{An address-field object, defined with \code{make_address_field}, see Examples.}

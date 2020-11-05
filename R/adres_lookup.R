@@ -54,8 +54,10 @@ make_address_field <- function(data,
   }
 
   adres_string <- unname(adres_string)
-  class(adres_string) <- c("adres_field","character")
+  class(adres_string) <- ifelse(is.null(columns), "adres_template", "adres_columns")
+
   attr(adres_string, "adres_fields") <- fields
+  attr(adres_string, "inputtype") <-
 
   return(adres_string)
 }
@@ -98,7 +100,8 @@ make_adres_string <- function(data, fields){
 
     part2 <- paste0(prefix, paste_prep_columns(data_part2))
 
-    out <- paste0(out, part2)
+    out <- paste0(out, part2) %>%
+      remove_extra_underscores(.)
   }
 
 out
@@ -107,7 +110,7 @@ out
 
 
 #' @export
-print.adres_field <- function(x, n = 10, ...){
+print.adres_columns <- function(x, n = 10, ...){
 
   n <- min(n, length(x))
 
@@ -128,6 +131,8 @@ print.adres_field <- function(x, n = 10, ...){
 
 }
 
+#' @export
+print.adres_template <- print.adres_columns
 
 
 
@@ -149,9 +154,15 @@ print.adres_field <- function(x, n = 10, ...){
 #' }
 #'
 #' @export
-match_bag_address <- function(x, bag, bag_columns = "all"){
+match_bag_address <- function(x, ...){
 
-  stopifnot(inherits(x, "adres_field"))
+  UseMethod("match_bag_address")
+
+}
+
+#' @export
+match_bag_address.adres_columns <- function(x, bag, bag_columns = "all"){
+
 
   if(bag_columns[1] == "all"){
     bag_columns <- names(bag)
@@ -174,20 +185,28 @@ match_bag_address <- function(x, bag, bag_columns = "all"){
   # adressen zonder (huis)nummer moeten NA zijn
   ff[!grepl("[0-9]", txt_), ] <- NA
 
-  # # huisnummers moeten gelijk zijn
-  # bag_match <- bag[match(ff$match, find_),]
-  #
-  # mtch_huisnr <- rep(FALSE, length(txt_))
-  #
-  # for(i in seq_along(txt_)){
-  #   nr <- bag_match$huisnummer[i]
-  #   if(is.na(nr))next
-  #
-  #   # Huisnummer gevolgd door letter (huisletter, hopelijk) of 'word boundary' (space / eol)
-  #   mtch_huisnr[i] <- any(grepl(glue("(\\b|[a-z]){nr}(\\b|[a-z])"), txt_[i]))
-  # }
-  #
-  # ff[!mtch_huisnr, ] <- NA
+  # Nu dat we matches hebben gedaan op char distance, hebben we veel slechte matches,
+  # huisnummers komen niet overeen.
+  hr_f <- which(fields == "huisnummer")
+  hr_data <- sapply(strsplit(x, "_"), function(row){
+
+    if(length(row) < hr_f){
+      return("")
+    } else {
+      row[hr_f]
+    }
+
+  })
+
+  if(!all(hr_data == "")){
+    hr_data <- gsub("[a-z]","",hr_data)
+
+    bag_match_hr <- as.character(bag[match(ff$match, find_), ]$huisnummer)
+
+    have_no_match <- which(bag_match_hr != hr_data)
+    ff[have_no_match, ] <- NA
+  }
+
 
   b <- cbind(bag[match(ff$match, find_), bag_columns],
              data.frame(char_distance = ff$distance))
@@ -195,6 +214,62 @@ match_bag_address <- function(x, bag, bag_columns = "all"){
 return(b)
 }
 
+
+
+
+#' @export
+match_bag_address.adres_template <- function(x, bag, bag_columns = "all"){
+
+
+  if(bag_columns[1] == "all"){
+    bag_columns <- names(bag)
+  }
+
+  fields <- attr(x, "adres_fields") %>%
+    convert_adres_fields(.)
+
+  if(!all(fields %in% names(bag))){
+    stop("Not all fields found in BAG.")
+  }
+
+  txt_ <- unclass(x) %>% no_space
+
+  find_ <- make_adres_string(bag, fields)
+
+  ff <- fuzzy_find(txt_, find_)
+  if(!is_tibble(ff))ff <- bind_rows(ff)  # bug fix met 1 record
+
+  # adressen zonder (huis)nummer moeten NA zijn
+  ff[!grepl("[0-9]", txt_), ] <- NA
+
+  # Nu dat we matches hebben gedaan op char distance, hebben we veel slechte matches,
+  # huisnummers komen niet overeen.
+  hr_f <- which(fields == "huisnummer")
+  hr_data <- sapply(strsplit(x, "_"), function(row){
+
+    if(length(row) < hr_f){
+      return("")
+    } else {
+      row[hr_f]
+    }
+
+  })
+
+  if(!all(hr_data == "")){
+    hr_data <- gsub("[a-z]","",hr_data)
+
+    bag_match_hr <- as.character(bag[match(ff$match, find_), ]$huisnummer)
+
+    have_no_match <- which(bag_match_hr != hr_data)
+    ff[have_no_match, ] <- NA
+  }
+
+
+  b <- cbind(bag[match(ff$match, find_), bag_columns],
+             data.frame(char_distance = ff$distance))
+
+  return(b)
+}
 
 
 
