@@ -7,6 +7,13 @@ is_empty <- function(x){
 }
 
 
+remove_extra_underscores <- function(x){
+  out <- gsub("(_)\\1+", "\\1", x)
+  out <- gsub("^_","", out)
+  out <- gsub("_$","", out)
+  out
+}
+
 
 emp <- function(x)ifelse(is.na(x), "", as.character(x))
 
@@ -86,7 +93,7 @@ remove_doublespace <- function(x){
 
 # Verwijder karakters die nooit in straatnamen voorkomen
 remove_bad_chars <- function(x,
-                             chars=c(",",";","/","_","&","%","@","#","$","!","?","*","(",")"),
+                             chars=c(",",";","/","&","%","@","#","$","!","?","*","(",")"),
                              double_space=TRUE){
 
   for(i in seq_along(chars)){
@@ -126,11 +133,7 @@ bag_paste_columns <- function(data, fields){
 
   data <- data[,fields]
 
-  data <- as.data.frame(lapply(data, as.character), stringsAsFactors = FALSE)
-
-  data[is.na(data)] <- ""
-
-  apply(data, 1, paste, collapse = " ") %>% str_trim
+  make_adres_string(data)
 }
 
 

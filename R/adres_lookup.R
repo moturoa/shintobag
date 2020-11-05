@@ -28,8 +28,9 @@ make_address_field <- function(data,
   if(!is.null(columns)){
 
     fields <- names(columns)
+    fields[fields == "straat"] <- "openbareruimtenaam"
 
-    vars <- unlist(columns)
+    vars <- unname(unlist(columns))
 
     if(!all(vars %in% names(data))){
       stop("Not all columns present in data.")
@@ -38,24 +39,7 @@ make_address_field <- function(data,
     out <- data[, vars] %>%
       setNames(fields)
 
-    if("postcode" %in% fields){
-      out$postcode <- postcode_nospace(out$postcode)
-    }
-
-    adres_string <- apply(out, 1, function(x){
-
-      paste0(emp(x["postcode"]), " ",
-             emp(x["straat"]), " ",
-             emp(x["huisnummer"]),
-             emp(x["huisletter"]), " ",
-             emp(x["huisnummertoevoeging"]), " ",
-             emp(x["woonplaats"])
-             ) %>%
-        tolower(.) %>%
-        str_trim(.) %>%
-        remove_bad_chars(.)
-
-    })
+    adres_string <- make_adres_string(out, fields)
 
   } else {
 
@@ -75,6 +59,51 @@ make_address_field <- function(data,
 
   return(adres_string)
 }
+
+
+paste_prep_columns <- function(data){
+
+  apply(data, 1, paste, collapse = "_") %>%
+    tolower(.) %>%
+    remove_extra_underscores(.) %>%
+    no_space(.) %>%
+    remove_bad_chars(.)
+
+}
+
+make_adres_string <- function(data, fields){
+
+
+  data <- data[, fields]
+
+  part1_cols <- intersect(fields, c("postcode", "openbareruimtenaam", "huisnummer"))
+  part2_cols <- intersect(fields, c("huisletter", "huisnummertoevoeging", "woonplaats"))
+
+  data_part1 <- data[, part1_cols]
+  data_part1[is.na(data_part1)] <- ""
+
+  out <- paste_prep_columns(data_part1)
+
+  if(length(part2_cols) > 0){
+
+    data_part2 <- data[, part2_cols]
+    data_part2[is.na(data_part2)] <- ""
+
+    # Huisletter is een uitzondering: plak naast huisnummer
+    if("huisletter" %in% part2_cols){
+
+      have_hl <- !data$huisletter %in% c(NA, "")
+      prefix <- ifelse(have_hl, "", "_")
+    }
+
+    part2 <- paste0(prefix, paste_prep_columns(data_part2))
+
+    out <- paste0(out, part2)
+  }
+
+out
+}
+
 
 
 #' @export
@@ -137,29 +166,28 @@ match_bag_address <- function(x, bag, bag_columns = "all"){
 
   txt_ <- unclass(x) %>% no_space
 
-  find_ <- bag_paste_columns(bag, fields) %>%
-    tolower %>% no_space
+  find_ <- make_adres_string(bag, fields)
 
   ff <- fuzzy_find(txt_, find_)
   if(!is_tibble(ff))ff <- bind_rows(ff)  # bug fix met 1 record
 
-  # adressen zonder huisnummer moeten NA zijn
+  # adressen zonder (huis)nummer moeten NA zijn
   ff[!grepl("[0-9]", txt_), ] <- NA
 
-  # huisnummers moeten gelijk zijn
-  bag_match <- bag[match(ff$match, find_),]
-
-  mtch_huisnr <- rep(FALSE, length(txt_))
-
-  for(i in seq_along(txt_)){
-    nr <- bag_match$huisnummer[i]
-    if(is.na(nr))next
-
-    # Huisnummer gevolgd door letter (huisletter, hopelijk) of 'word boundary' (space / eol)
-    mtch_huisnr[i] <- any(grepl(glue("(\\b|[a-z]){nr}(\\b|[a-z])"), txt_[i]))
-  }
-
-  ff[!mtch_huisnr, ] <- NA
+  # # huisnummers moeten gelijk zijn
+  # bag_match <- bag[match(ff$match, find_),]
+  #
+  # mtch_huisnr <- rep(FALSE, length(txt_))
+  #
+  # for(i in seq_along(txt_)){
+  #   nr <- bag_match$huisnummer[i]
+  #   if(is.na(nr))next
+  #
+  #   # Huisnummer gevolgd door letter (huisletter, hopelijk) of 'word boundary' (space / eol)
+  #   mtch_huisnr[i] <- any(grepl(glue("(\\b|[a-z]){nr}(\\b|[a-z])"), txt_[i]))
+  # }
+  #
+  # ff[!mtch_huisnr, ] <- NA
 
   b <- cbind(bag[match(ff$match, find_), bag_columns],
              data.frame(char_distance = ff$distance))
