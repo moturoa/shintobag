@@ -19,13 +19,13 @@ adres <- read.table(text = "            straat huisnummer postcode      woonplaa
 library(shintobag)
 
 # !!
-options(shintobag_conf = "c:/repos/conf/config.yml")
+options(shintobag_conf = "path/to/config.yml")
 
 # Eenmalig
-download_gemeente_opendata("Nederweert", out_path = ".")
+download_gemeente_opendata("Nederweert", out_path = "test")
 
 # BAG
-bag_nederweert <- read_feather("bag_Nederweert.feather")
+bag_nederweert <- read_feather("test/bag_Nederweert.feather")
 
 # Vind adressen:
 make_address_field(data = adres,

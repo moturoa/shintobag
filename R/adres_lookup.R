@@ -234,7 +234,18 @@ match_bag_address.adres_template <- function(x, bag, bag_columns = "all"){
 
   txt_ <- unclass(x) %>% no_space
 
-  find_ <- bag_paste_columns(bag, fields) %>%
+  paste_columns <- function(data, fields){
+
+    data <- data[,fields]
+
+    data <- as.data.frame(lapply(data, as.character), stringsAsFactors = FALSE)
+
+    data[is.na(data)] <- ""
+
+    apply(data, 1, paste, collapse = " ") %>% str_trim
+  }
+
+  find_ <- paste_columns(bag, fields) %>%
     tolower %>% no_space
 
   ff <- fuzzy_find(txt_, find_)
