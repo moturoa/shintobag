@@ -234,36 +234,29 @@ match_bag_address.adres_template <- function(x, bag, bag_columns = "all"){
 
   txt_ <- unclass(x) %>% no_space
 
-  find_ <- make_adres_string(bag, fields)
+  find_ <- bag_paste_columns(bag, fields) %>%
+    tolower %>% no_space
 
   ff <- fuzzy_find(txt_, find_)
   if(!is_tibble(ff))ff <- bind_rows(ff)  # bug fix met 1 record
 
-  # adressen zonder (huis)nummer moeten NA zijn
+  # adressen zonder huisnummer moeten NA zijn
   ff[!grepl("[0-9]", txt_), ] <- NA
 
-  # Nu dat we matches hebben gedaan op char distance, hebben we veel slechte matches,
-  # huisnummers komen niet overeen.
-  hr_f <- which(fields == "huisnummer")
-  hr_data <- sapply(strsplit(x, "_"), function(row){
+  # huisnummers moeten gelijk zijn
+  bag_match <- bag[match(ff$match, find_),]
 
-    if(length(row) < hr_f){
-      return("")
-    } else {
-      row[hr_f]
-    }
+  mtch_huisnr <- rep(FALSE, length(txt_))
 
-  })
+  for(i in seq_along(txt_)){
+    nr <- bag_match$huisnummer[i]
+    if(is.na(nr))next
 
-  if(!all(hr_data == "")){
-    hr_data <- gsub("[a-z]","",hr_data)
-
-    bag_match_hr <- as.character(bag[match(ff$match, find_), ]$huisnummer)
-
-    have_no_match <- which(bag_match_hr != hr_data)
-    ff[have_no_match, ] <- NA
+    # Huisnummer gevolgd door letter (huisletter, hopelijk) of 'word boundary' (space / eol)
+    mtch_huisnr[i] <- any(grepl(glue("(\\b|[a-z]){nr}(\\b|[a-z])"), txt_[i]))
   }
 
+  ff[!mtch_huisnr, ] <- NA
 
   b <- cbind(bag[match(ff$match, find_), bag_columns],
              data.frame(char_distance = ff$distance))
