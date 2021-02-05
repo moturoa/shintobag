@@ -220,7 +220,6 @@ return(b)
 #' @export
 match_bag_address.adres_template <- function(x, bag, bag_columns = "all"){
 
-
   if(bag_columns[1] == "all"){
     bag_columns <- names(bag)
   }

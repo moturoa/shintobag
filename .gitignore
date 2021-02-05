@@ -6,3 +6,6 @@
 *.yml
 cache/
 inst/doc
+*.rds
+*.feather
+test/
