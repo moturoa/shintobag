@@ -54,43 +54,45 @@ bagSelect <- function(input, output, session, bag,
                       reset_button = reactive(NULL),
                       enkel_adres = TRUE,
                       allow_null_woonplaats = TRUE,
-                      ui_straat = c("autocomplete","selectInput")){
+                      ui_straat = c("autocomplete","selectInput"),
+                      ping = reactive(runif(1))){
 
   ui_straat <- match.arg(ui_straat)
+
+  bag_straten <- sort(unique(bag$openbareruimtenaam))
 
 
   if(!all(c("huisnummerhuisletter","bag_adres") %in% names(bag))){
     stop("BAG moet bewerkt worden met add_bag_adres_kolommen()")
   }
 
-  updateSelectizeInput(session, "sel_woonplaats",
-                       choices = sort(unique(bag$woonplaatsnaam)),
-                       selected = "")
+  observeEvent(ping(), {
+    updateSelectizeInput(session, "sel_woonplaats",
+                         choices = sort(unique(bag$woonplaatsnaam)),
+                         selected = "")
 
-  if(allow_null_woonplaats){
-    if(ui_straat == "selectInput"){
-      updateSelectizeInput(session, "sel_openbareruimtenaam",
-                           choices = c("", sort(unique(bag$openbareruimtenaam))),
-                           selected = "", server = TRUE)
-    } else {
-      update_autocomplete_input(session, "sel_openbareruimtenaam",
-                                options = c("", sort(unique(bag$openbareruimtenaam))),
-                                value = "")
+    if(allow_null_woonplaats){
+      if(ui_straat == "selectInput"){
+        updateSelectizeInput(session, "sel_openbareruimtenaam",
+                             choices = c("", bag_straten),
+                             selected = "", server = TRUE)
+      } else {
+        update_autocomplete_input(session, "sel_openbareruimtenaam",
+                                  options = c("", bag_straten),
+                                  value = "")
+      }
+
+
     }
+  })
 
+  observeEvent(input$sel_woonplaats, {
 
-  }
-
-  observe({
-
-    woonpl <- input$sel_woonplaats
-    req(woonpl)
-
-    bag_woonpl <- dplyr::filter(bag, woonplaatsnaam %in% !!woonpl)
+    bag_woonpl <- dplyr::filter(bag, woonplaatsnaam %in% !!input$sel_woonplaats)
 
     if(ui_straat == "selectInput"){
       updateSelectizeInput(session, "sel_openbareruimtenaam",
-                           choices = c("", sort(unique(bag$openbareruimtenaam))),
+                           choices = c("", sort(unique(bag_woonpl$openbareruimtenaam))),
                            selected = "", server = TRUE)
     } else {
       update_autocomplete_input(session, "sel_openbareruimtenaam",
@@ -102,12 +104,9 @@ bagSelect <- function(input, output, session, bag,
 
 
   # Huisnummer/huisletter combo opties weergeven.
-  observe({
+  observeEvent(input$sel_openbareruimtenaam, {
 
-    straat <- input$sel_openbareruimtenaam
-    req(straat)
-
-    bag_straat <- dplyr::filter(bag, openbareruimtenaam == !!straat)
+    bag_straat <- dplyr::filter(bag, openbareruimtenaam == !!input$sel_openbareruimtenaam)
 
     updateSelectizeInput(session, "sel_huisnummerhuisletter",
                          choices = c("", sort_leading_num(bag_straat$huisnummerhuisletter)),

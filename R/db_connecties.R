@@ -12,6 +12,10 @@ shinto_db_connection <- function(what,
 
   conf <- config::get(what, file = file)
 
+  if(is.null(conf)){
+    stop(paste("Entry", what, "not found in", file," - add password information and try again!"))
+  }
+
   if(!pool){
     DBI::dbConnect(RPostgres::Postgres(),
                    dbname = conf$dbname,

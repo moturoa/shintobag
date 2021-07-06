@@ -20,7 +20,8 @@ bagSelect(
   reset_button = reactive(NULL),
   enkel_adres = TRUE,
   allow_null_woonplaats = TRUE,
-  ui_straat = c("autocomplete", "selectInput")
+  ui_straat = c("autocomplete", "selectInput"),
+  ping = reactive(runif(1))
 )
 }
 \description{
