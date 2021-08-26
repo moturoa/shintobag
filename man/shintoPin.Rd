@@ -22,6 +22,7 @@ Get BAG & CBS data in Shiny applications, fast and without hassle.
 \item \href{#method-register}{\code{shintoPin$register()}}
 \item \href{#method-pin_bag_name}{\code{shintoPin$pin_bag_name()}}
 \item \href{#method-pin_cbs_name}{\code{shintoPin$pin_cbs_name()}}
+\item \href{#method-pin}{\code{shintoPin$pin()}}
 \item \href{#method-pin_bag_cbs_data}{\code{shintoPin$pin_bag_cbs_data()}}
 \item \href{#method-get_pin_data}{\code{shintoPin$get_pin_data()}}
 \item \href{#method-get_bag_pin}{\code{shintoPin$get_bag_pin()}}
@@ -95,6 +96,27 @@ Name of the pin for the CBS for a gemeente
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{gemeente}}{E.g. "Eindhoven"}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-pin"></a>}}
+\if{latex}{\out{\hypertarget{method-pin}{}}}
+\subsection{Method \code{pin()}}{
+Store a pin on the rsconnect board. Simple wrapper around pin::pin, with typical settings.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{shintoPin$pin(data, name, description)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{data}}{Dataframe}
+
+\item{\code{name}}{Name to be used on rsconnect board (choose wisely!)}
+
+\item{\code{description}}{Description to show on rsconnect board}
 }
 \if{html}{\out{</div>}}
 }

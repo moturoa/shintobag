@@ -53,6 +53,19 @@ shintoPin <- R6::R6Class(
     },
 
     #' @description
+    #' Store a pin on the rsconnect board. Simple wrapper around pin::pin, with typical settings.
+    #' @param data Dataframe
+    #' @param name Name to be used on rsconnect board (choose wisely!)
+    #' @param description Description to show on rsconnect board
+    pin = function(data, name, description){
+      pin(I(data),
+          name = name,
+          description = description,
+          board = "rsconnect")
+    },
+
+
+    #' @description
     #' Create a pin for the BAG and CBS data for a gemeente.
     #' @param gemeente E.g. "Eindhoven"
     pin_bag_cbs_data = function(gemeente){
