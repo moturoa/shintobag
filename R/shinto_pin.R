@@ -33,7 +33,7 @@ shintoPin <- R6::R6Class(
     #' @param config_file Defaults to `options(path_shinydev_config = "<<filehere>>")`
     register = function(config_file= getOption("path_shinydev_config")){
       stopifnot(!is.null(config_file))
-      key <- config::get("rsconnect_api_key", file = config_file)
+      key <- yaml::read_yaml(config_file)$rsconnect_api_key
       pins::board_register_rsconnect(server = self$server,
                                      key = key)
 
