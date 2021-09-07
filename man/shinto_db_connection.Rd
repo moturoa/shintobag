@@ -14,9 +14,9 @@ shinto_db_connection(
 \arguments{
 \item{what}{Welke database connectie in het config bestand? (bv. "BAGdata")}
 
-\item{file}{Lokatie van het config bestand, normaal gezet via `options(shintobag_conf = /path/to/file)`}
+\item{file}{Lokatie van het config bestand, normaal gezet via \verb{options(shintobag_conf = /path/to/file)}}
 
-\item{pool}{Logical. Als TRUE, gebruikt `pool::dbPool`, anders `DBI::dbConnect`}
+\item{pool}{Logical. Als TRUE, gebruikt \code{pool::dbPool}, anders \code{DBI::dbConnect}}
 }
 \description{
 Make a connection with RPostgres to one of the Shinto Labs databases.

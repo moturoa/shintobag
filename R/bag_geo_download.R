@@ -15,7 +15,7 @@ make_sql <- function(dbname, gemeente = NULL){
 
 
 #' Download the BAG
-#' @description Download the BAG for one Gemeente at a time. Result is an \code{sf} spatial dataframe.
+#' @description Download the BAG for one Gemeente at a time. Result is an `sf` spatial dataframe.
 #' @param gemeente Bv. "Rozendaal"
 #' @export
 get_bag <- function(gemeente, con = NULL, ...){
@@ -135,7 +135,7 @@ get_geo <- function(gemeente = NULL,
 #' @description Download gemeente, wijk, en buurt grenzen uit de CBS Wijk/Buurt kaart.
 #' @details De config moet 'data_cbs' connectie details bevatten (naar de CBS database).
 #' @param gemeente Gemeentenaam
-#' @param what Voor \code{get_geo}, "buurten", "wijken", of "grens"
+#' @param what Voor `get_geo`, "buurten", "wijken", of "grens"
 #' @param con Connectie naar de CBS database (als leeg, wordt automatisch aangemaakt)
 #' @rdname get_gemeente_geo
 #' @export
@@ -283,7 +283,7 @@ get_woonkernen <- function(grens, ...){
 
 #' Row-bind geo objects
 #' @description Combine multiple geo objects into a single one. Geo objects are read with
-#' \code{get_gemeente_geo}.
+#' `get_gemeente_geo`.
 #' @examples
 #' \dontrun{
 #' elke tabel heeft kolom 'gm_naam' voor filtering
@@ -311,7 +311,7 @@ rbind_geo <- function(lis){
 
 #' Download BAG and Geo data for a Gemeente
 #' @description Downloads wijk, buurt, gemeente borders, and the BAG for a Gemeente.
-#' For BAG, writes an RDS into \code{out_path} (a spatial version, sf-dataframe), and a .feather (
+#' For BAG, writes an RDS into `out_path` (a spatial version, sf-dataframe), and a .feather (
 #'  a non-spatial version for very fast reading). For geo, writes e.g. "geo_Eindhoven.rds", a list
 #'  with components: wijken, buurten, grens.
 #' @param gemeente E.g. "Eindhoven"

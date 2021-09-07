@@ -4,7 +4,7 @@
 #' @param data Either a dataframe (if columns argument is used), or a vector (if template argument is used).
 #' @param columns List, see Details.
 #' @param template Character string. See Details.
-#' @details This function can be used in two ways. Either provide a dataframe, and \code{columns} to define
+#' @details This function can be used in two ways. Either provide a dataframe, and `columns` to define
 #' which columns to combine into an address field, or provide a text vector and a "template" defining
 #' how the address information is included.
 #'
@@ -13,7 +13,7 @@
 #' 'huisnummertoevoeging', 'postcode'. The right-hand value of the list (between "") is the name of the colum
 #' in the provided dataset.
 #'
-#' When \code{template} is used, it is used to define how the address is provided. For example,
+#' When `template` is used, it is used to define how the address is provided. For example,
 #' with data = "Voorbeeldplein 2 Eendhoven", template should be "{straat}{huisnummer}{woonplaats}".
 #' Use curly braces to separate the fields.
 #' @export
@@ -137,7 +137,7 @@ print.adres_template <- print.adres_columns
 
 
 #' Match addresses to the BAG
-#' @param x An address-field object, defined with \code{make_address_field}, see Examples.
+#' @param x An address-field object, defined with `make_address_field`, see Examples.
 #' @param bag The BAG for this Gemeente (dataframe).
 #' @param bag_columns Which columns from the BAG to return as a result.
 #' @examples

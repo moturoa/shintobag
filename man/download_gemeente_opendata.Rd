@@ -14,6 +14,6 @@ download_gemeente_opendata(gemeente, out_path = ".", re_download = TRUE)
 \description{
 Downloads wijk, buurt, gemeente borders, and the BAG for a Gemeente.
 For BAG, writes an RDS into \code{out_path} (a spatial version, sf-dataframe), and a .feather (
- a non-spatial version for very fast reading). For geo, writes e.g. "geo_Eindhoven.rds", a list
- with components: wijken, buurten, grens.
+a non-spatial version for very fast reading). For geo, writes e.g. "geo_Eindhoven.rds", a list
+with components: wijken, buurten, grens.
 }

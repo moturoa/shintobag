@@ -12,7 +12,6 @@ if(FALSE){
                  huisnummertoevoeging = mil_housecharacter) %>%
     filter(!is.na(straat), !is.na(huisnummer))
 
-
   write.csv2(data, "test/milnav_bag_mismatch.csv", row.names=FALSE)
 
 }

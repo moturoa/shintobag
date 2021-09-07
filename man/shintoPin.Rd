@@ -61,7 +61,7 @@ Register the rsconnect board
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{config_file}}{Defaults to `options(path_shinydev_config = "<<filehere>>")`}
+\item{\code{config_file}}{Defaults to \code{options(path_shinydev_config = "<<filehere>>")}}
 }
 \if{html}{\out{</div>}}
 }

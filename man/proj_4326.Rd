@@ -8,5 +8,5 @@ proj_4326(data)
 }
 \description{
 Projecteert naar EPS 4326, voor gebruik in leaflet. Werkt ook voor lege spatial columns,
-waar `st_transform` moeite mee heeft. Voor polygonen, haalt ook de z-as weg (anders werkt leaflet niet).
+waar \code{st_transform} moeite mee heeft. Voor polygonen, haalt ook de z-as weg (anders werkt leaflet niet).
 }
