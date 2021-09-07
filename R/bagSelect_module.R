@@ -3,8 +3,7 @@
 #' @export
 bagSelectUI <- function(id,
                         woonplaats_multiple = FALSE,
-                        reset_button = TRUE,
-                        ui_straat = c("autocomplete","selectInput")){
+                        reset_button = TRUE){
 
   ui_straat <- match.arg(ui_straat)
 
@@ -15,21 +14,14 @@ bagSelectUI <- function(id,
                 label_tooltip("Woonplaats", "Selecteer eerst de woonplaats"),
                 choices = NULL, multiple = woonplaats_multiple),
 
-    if(ui_straat == "selectInput"){
-      selectInput(ns("sel_openbareruimtenaam"),
-                  label_tooltip("Straat", paste("Typ de eerste letter van de straatnaam",
-                                                "om de opties te zien.",
-                                                "Zie je niks? Dan is er geen straat met",
-                                                "die naam in deze woonplaats")),
-                  choices = NULL, multiple = FALSE)
-    } else {
-      autocomplete_input(ns("sel_openbareruimtenaam"),
-                         label_tooltip("Straat", paste("Typ de eerste letter van de straatnaam",
-                                                       "om de opties te zien.",
-                                                       "Zie je niks? Dan is er geen straat met",
-                                                       "die naam in deze woonplaats")),
-                         options = NULL, max_options = 100)
-    },
+
+    selectInput(ns("sel_openbareruimtenaam"),
+                label_tooltip("Straat", paste("Typ de eerste letter van de straatnaam",
+                                              "om de opties te zien.",
+                                              "Zie je niks? Dan is er geen straat met",
+                                              "die naam in deze woonplaats")),
+                choices = NULL, multiple = FALSE),
+
 
     selectizeInput(ns("sel_huisnummerhuisletter"), "Huisnummer", choices = NULL),
     if(reset_button){
@@ -72,16 +64,10 @@ bagSelect <- function(input, output, session, bag,
                          selected = "")
 
     if(allow_null_woonplaats){
-      if(ui_straat == "selectInput"){
+
         updateSelectizeInput(session, "sel_openbareruimtenaam",
                              choices = c("", bag_straten),
                              selected = "", server = TRUE)
-      } else {
-        update_autocomplete_input(session, "sel_openbareruimtenaam",
-                                  options = c("", bag_straten),
-                                  value = "")
-      }
-
 
     }
   })
@@ -90,15 +76,11 @@ bagSelect <- function(input, output, session, bag,
 
     bag_woonpl <- dplyr::filter(bag, woonplaatsnaam %in% !!input$sel_woonplaats)
 
-    if(ui_straat == "selectInput"){
-      updateSelectizeInput(session, "sel_openbareruimtenaam",
-                           choices = c("", sort(unique(bag_woonpl$openbareruimtenaam))),
-                           selected = "", server = TRUE)
-    } else {
-      update_autocomplete_input(session, "sel_openbareruimtenaam",
-                                options = c("", sort(unique(bag_woonpl$openbareruimtenaam))),
-                                value = "")
-    }
+
+    updateSelectizeInput(session, "sel_openbareruimtenaam",
+                         choices = c("", sort(unique(bag_woonpl$openbareruimtenaam))),
+                         selected = "", server = TRUE)
+
 
   })
 
@@ -122,14 +104,6 @@ bagSelect <- function(input, output, session, bag,
     updateSelectizeInput(session, "sel_huisnummerhuisletter",
                          selected = character(0))
 
-    if(allow_null_woonplaats){
-      update_autocomplete_input(session, "sel_openbareruimtenaam",
-                                options = c("", sort(unique(bag$openbareruimtenaam))),
-                                value = "")
-    } else {
-      update_autocomplete_input(session, "sel_openbareruimtenaam",
-                                value = "")
-    }
 
   }
 

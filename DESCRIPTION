@@ -1,11 +1,11 @@
 Package: shintobag
 Type: Package
 Title: Work with the BAG
-Version: 0.3-2
+Version: 0.3-3
 Author: Remko Duursma
 Maintainer: Remko Duursma <remko@shintolabs.nl>
 Description: Match untidy addresses to the BAG, download the BAG, work with the BAG.
-Depends: dplyr, stringr, tidyr, glue, DBI, RPostgres, sf, feather, jsonlite, dqshiny, tibble
+Depends: dplyr, stringr, tidyr, glue, DBI, RPostgres, sf, feather, jsonlite, tibble
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
