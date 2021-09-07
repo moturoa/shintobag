@@ -8,6 +8,7 @@
 get_geo(
   gemeente = NULL,
   what = c("grens", "buurten", "wijken"),
+  jaar = c("2018", "2021"),
   con = NULL,
   ...
 )

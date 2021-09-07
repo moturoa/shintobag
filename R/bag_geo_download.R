@@ -111,6 +111,7 @@ project_cbs_geo <- function(x){
 #' @export
 get_geo <- function(gemeente = NULL,
                     what = c("grens","buurten","wijken"),
+                    jaar = c("2018", "2021"),
                     con = NULL, ...){
 
   if(is.null(con)){
@@ -119,12 +120,22 @@ get_geo <- function(gemeente = NULL,
   }
 
   what <- match.arg(what)
+  jaar <- match.arg(jaar)
 
-  tb <- switch(what,
-               grens = "gemeente_2018_v2",
-               wijken = "wijk_2018_v2",
-               buurten = "buurt_2018_v2",
-  )
+  if(jaar == "2018"){
+    tb <- switch(what,
+                 grens = "gemeente_2018_v2",
+                 wijken = "wijk_2018_v2",
+                 buurten = "buurt_2018_v2"
+    )
+  } else {
+    tb <- switch(what,
+                 grens = "gemeente_2021",
+                 wijken = "wijk_2021",
+                 buurten = "buurt_2021"
+    )
+  }
+
 
   sf::st_read(con, query = make_sql(tb, gemeente)) %>%
     project_cbs_geo
