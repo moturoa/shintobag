@@ -13,7 +13,7 @@ get_geo(
   ...
 )
 
-get_gemeente_geo(gemeente, ...)
+get_gemeente_geo(gemeente, jaar = c("2018", "2021"), ...)
 }
 \arguments{
 \item{gemeente}{Gemeentenaam}

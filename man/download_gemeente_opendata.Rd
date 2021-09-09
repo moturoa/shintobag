@@ -4,7 +4,12 @@
 \alias{download_gemeente_opendata}
 \title{Download BAG and Geo data for a Gemeente}
 \usage{
-download_gemeente_opendata(gemeente, out_path = ".", re_download = TRUE)
+download_gemeente_opendata(
+  gemeente,
+  out_path = ".",
+  re_download = TRUE,
+  cbs_jaar = c("2018", "2021")
+)
 }
 \arguments{
 \item{gemeente}{E.g. "Eindhoven"}
