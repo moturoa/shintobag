@@ -108,10 +108,14 @@ project_cbs_geo <- function(x){
 
 
 #' @rdname get_gemeente_geo
+#' @param jaar Buurt wijk kaart "2018" of "2021"
+#' @param kws Als jaar = "2021", kerncijfers tevoegen?
 #' @export
 get_geo <- function(gemeente = NULL,
                     what = c("grens","buurten","wijken"),
                     jaar = c("2018", "2021"),
+                    kws = FALSE,
+                    kws_jaar = 2021,
                     con = NULL, ...){
 
   if(is.null(con)){
@@ -137,9 +141,88 @@ get_geo <- function(gemeente = NULL,
   }
 
 
-  sf::st_read(con, query = make_sql(tb, gemeente)) %>%
+  out <- sf::st_read(con, query = make_sql(tb, gemeente)) %>%
     project_cbs_geo
+
+  if(kws){
+    assert_kws_peiljaar(kws_jaar)
+    out <- out %>%
+      add_kws(kws_jaar)
+  }
+
+out
 }
+
+
+
+assert_kws_peiljaar <- function(peiljaar){
+  if(!all(peiljaar %in% 2013:2021)){
+    stop("Alleen data geupload tussen 2013 en 2021")
+  }
+}
+
+#' @rdname get_gemeente_kws
+#' @export
+#' @importFrom dplyr tbl
+get_kws <- function(gemeente,
+                     what = c("grens","buurten","wijken"),
+                     peiljaar = 2021,
+                     con = NULL, ...){
+
+  what <- match.arg(what)
+  assert_kws_peiljaar(peiljaar)
+
+  if(is.null(con)){
+    con <- shinto_db_connection("data_cbs", ...)
+    on.exit(DBI::dbDisconnect(con))
+  }
+
+  s_txt <- switch(what,
+                  grens = "Gemeente",
+                  buurten = "Buurt",
+                  wijken = "Wijk"
+                  )
+
+  gwb_txt <- switch(what,
+                    grens = "gm_code",
+                    buurten = "bu_code",
+                    wijken = "wk_code"
+  )
+
+  dplyr::tbl(con, "cbs_kerncijfers_2013_2021") %>%
+    dplyr::filter(gm_naam %in% !!gemeente,
+                  peiljaar %in% !!peiljaar,
+                  regio_type == !!s_txt) %>%
+    collect %>%
+    rename(!!sym(gwb_txt):=gwb_code)
+
+}
+
+#' @rdname get_gemeente_kws
+#' @export
+add_kws <- function(data, peiljaar){
+
+  regio <- unique(data$regio_type)
+  if(length(regio) > 1)stop("Geen regio types mixen!")
+  assert_kws_peiljaar(peiljaar)
+
+  s_regio <- NULL
+  key_col <- names(data)[1]
+  if(key_col == "bu_code")s_regio<-"buurten"
+  if(key_col == "wk_code")s_regio<-"wijken"
+  if(key_col == "gm_code")s_regio <- "grens"
+  if(is.null(s_regio))stop("eerste kolom moet bu_code, wk_code of gm_code zijn")
+
+  gem <- unique(data$gm_naam)
+
+  data_kws <- get_kws(gem, s_regio, peiljaar)
+
+  data_geo <- get_geo(gem, s_regio, jaar = "2021") # niet peiljaar, maar jaar van grenzen.
+
+  left_join(data_kws, select(data_geo, - gm_naam), by = key_col)
+
+}
+
 
 
 #' Download Buurt, Wijk, Gemeente grenzen.

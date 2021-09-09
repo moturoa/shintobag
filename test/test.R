@@ -1,5 +1,28 @@
 
 
+options(shintobag_conf = "c:/repos/conf/config.yml")
+
+k <- get_kws("Eersel", "buurten", 2015)
+
+g1 <- get_geo("Eersel", "buurten", jaar = "2021") %>%
+  add_kws(peiljaar = 2021)
+dim(g1)
+
+g2 <- get_geo("Eersel", "buurten", jaar = "2021") %>%
+  add_kws(peiljaar = 2018:2021)
+dim(g2)
+
+
+g3 <- get_geo("Eersel", "wijken", jaar = "2021") %>%
+  add_kws(peiljaar = 2014)
+dim(g3)
+
+g3 <- get_geo("Eersel", "wijken", jaar = "2021") %>%
+  add_kws(peiljaar = 2014)
+dim(g3)
+
+g4 <- get_geo("Eersel", "wijken", jaar = "2021", kws = TRUE, kws_jaar = 2018)
+dim(g4)
 
 bag <- feather::read_feather("cache/bag_Nederweert.feather")
 
