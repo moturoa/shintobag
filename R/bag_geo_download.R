@@ -147,7 +147,7 @@ get_geo <- function(gemeente = NULL,
   if(kws){
     assert_kws_peiljaar(kws_jaar)
     out <- out %>%
-      add_kws(kws_jaar)
+      add_kws(kws_jaar, con)
   }
 
 out
@@ -200,7 +200,7 @@ get_kws <- function(gemeente,
 
 #' @rdname get_gemeente_kws
 #' @export
-add_kws <- function(data, peiljaar){
+add_kws <- function(data, peiljaar, con = NULL){
 
   regio <- unique(data$regio_type)
   if(length(regio) > 1)stop("Geen regio types mixen!")
@@ -215,12 +215,44 @@ add_kws <- function(data, peiljaar){
 
   gem <- unique(data$gm_naam)
 
-  data_kws <- get_kws(gem, s_regio, peiljaar)
+  data_kws <- get_kws(gem, s_regio, peiljaar, con = con)
 
-  data_geo <- get_geo(gem, s_regio, jaar = "2021") # niet peiljaar, maar jaar van grenzen.
+  data_geo <- get_geo(gem, s_regio, jaar = "2021", con = con) # niet peiljaar, maar jaar van grenzen.
 
-  left_join(data_kws, select(data_geo, - gm_naam), by = key_col)
+  left_join(select(data_geo, - gm_naam), data_kws, by = key_col)
 
+}
+
+
+#' @rdname get_gemeente_kws
+#' @export
+get_kws_metadata <- function(con = NULL, ...){
+
+  if(is.null(con)){
+    con <- shinto_db_connection("data_cbs", ...)
+    on.exit(DBI::dbDisconnect(con))
+  }
+
+  dplyr::tbl(con, "cbs_kerncijfers_2013_2021_metadata") %>% collect
+
+}
+
+#' @rdname get_gemeente_kws
+#' @export
+make_kws_select_choices <- function(choices = NULL){
+
+  data <- get_kws_metadata()
+
+  if(!is.null(choices)){
+    data <- dplyr::filter(data, kolom %in% !!choices)
+  }
+
+  o <- split(data$kolom %>% setNames(data$toelichting),
+             data$categorie)
+
+  o <- o[names(o) != ""]
+
+  o
 }
 
 
