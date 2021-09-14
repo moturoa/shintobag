@@ -22,8 +22,9 @@ shintoPin <- R6::R6Class(
         self$temp_directory <- "cache"
       } else {
         self$temp_directory <- temp_directory
-        dir.create(self$temp_directory, showWarnings = FALSE)
       }
+
+      dir.create(self$temp_directory, showWarnings = FALSE)
 
       self$register()
 
@@ -73,8 +74,8 @@ shintoPin <- R6::R6Class(
       flog.info(glue("Downloading from devpostgres02 for gemeente {gemeente}"))
       shintobag::download_gemeente_opendata(gemeente, self$temp_directory, re_download = FALSE)
       flog.info(glue("Download complete"))
-      bag_fn_out <- file.path(p$temp_directory, glue("bag_{gemeente}_sf.rds"))
-      cbs_fn_out <- file.path(p$temp_directory, glue("geo_{gemeente}.rds"))
+      bag_fn_out <- file.path(self$temp_directory, glue("bag_{gemeente}_sf.rds"))
+      cbs_fn_out <- file.path(self$temp_directory, glue("geo_{gemeente}.rds"))
 
       stopifnot(file.exists(bag_fn_out))
       stopifnot(file.exists(cbs_fn_out))
