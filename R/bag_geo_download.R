@@ -263,18 +263,23 @@ make_kws_select_choices <- function(choices = NULL){
 #' @param gemeente Gemeentenaam
 #' @param what Voor `get_geo`, "buurten", "wijken", of "grens"
 #' @param con Connectie naar de CBS database (als leeg, wordt automatisch aangemaakt)
+#' @param kws Kerncijfers toevoegen? (default: FALSE)
+#' @param kws_jaar Kerncijfers voor welk jaar toevoegen?
 #' @rdname get_gemeente_geo
 #' @export
-get_gemeente_geo <- function(gemeente, jaar = c("2018","2021"), ...){
+get_gemeente_geo <- function(gemeente, jaar = c("2018","2021"),
+                             kws = FALSE,
+                             kws_jaar = 2021,
+                             ...){
 
   jaar <- match.arg(jaar)
   cbs <- shinto_db_connection("data_cbs", ...)
   on.exit(DBI::dbDisconnect(cbs))
 
   out <- list(
-    grens = get_geo(gemeente, "grens", con = cbs, jaar = jaar),
-    wijken = get_geo(gemeente, "wijken", con = cbs, jaar = jaar),
-    buurten = get_geo(gemeente, "buurten", con = cbs, jaar = jaar)
+    grens = get_geo(gemeente, "grens", con = cbs, jaar = jaar, kws = kws, kws_jaar = kws_jaar),
+    wijken = get_geo(gemeente, "wijken", con = cbs, jaar = jaar, kws = kws, kws_jaar = kws_jaar),
+    buurten = get_geo(gemeente, "buurten", con = cbs, jaar = jaar, kws = kws, kws_jaar = kws_jaar)
   )
 
   class(out) <- "gemeentegrenzen"
@@ -444,7 +449,12 @@ rbind_geo <- function(lis){
 #' @param gemeente E.g. "Eindhoven"
 #' @param out_path The relative path to write the datasets to.
 #' @export
-download_gemeente_opendata <- function(gemeente, out_path = ".", re_download = TRUE, cbs_jaar = c("2018","2021")){
+download_gemeente_opendata <- function(gemeente,
+                                       out_path = ".",
+                                       re_download = TRUE,
+                                       cbs_jaar = c("2018","2021"),
+                                       kws = FALSE,
+                                       kws_jaar = 2021){
 
   fn_geo <- file.path(out_path, paste0("geo_", gemeente, ".rds"))
   fn_bag_1 <- file.path(out_path, paste0("bag_",gemeente,"_sf.rds"))
@@ -454,7 +464,7 @@ download_gemeente_opendata <- function(gemeente, out_path = ".", re_download = T
 
   # gemeente grenzen, wijk, buurt grenzen
   if(!file.exists(fn_geo) | re_download){
-    geo <- get_gemeente_geo(gemeente, jaar = cbs_jaar)
+    geo <- get_gemeente_geo(gemeente, jaar = cbs_jaar, kws = kws, kws_jaar = kws_jaar)
     saveRDS(geo, fn_geo)
   } else {
     geo <- readRDS(fn_geo)
@@ -465,6 +475,7 @@ download_gemeente_opendata <- function(gemeente, out_path = ".", re_download = T
   if(!file.exists(fn_bag_2) | re_download){
     bag <- get_bag(gemeente)
 
+    # buurt_naam, wijk_naam toevoegen op basis van locatie
     suppressMessages({
       bag <- bag %>%
         sf::st_join(dplyr::select(geo$buurten, buurt_naam = bu_naam)) %>%

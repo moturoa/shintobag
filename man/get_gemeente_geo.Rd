@@ -15,7 +15,13 @@ get_geo(
   ...
 )
 
-get_gemeente_geo(gemeente, jaar = c("2018", "2021"), ...)
+get_gemeente_geo(
+  gemeente,
+  jaar = c("2018", "2021"),
+  kws = FALSE,
+  kws_jaar = 2021,
+  ...
+)
 }
 \arguments{
 \item{gemeente}{Gemeentenaam}
@@ -24,7 +30,9 @@ get_gemeente_geo(gemeente, jaar = c("2018", "2021"), ...)
 
 \item{jaar}{Buurt wijk kaart "2018" of "2021"}
 
-\item{kws}{Als jaar = "2021", kerncijfers tevoegen?}
+\item{kws}{Kerncijfers toevoegen? (default: FALSE)}
+
+\item{kws_jaar}{Kerncijfers voor welk jaar toevoegen?}
 
 \item{con}{Connectie naar de CBS database (als leeg, wordt automatisch aangemaakt)}
 }

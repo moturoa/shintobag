@@ -8,7 +8,9 @@ download_gemeente_opendata(
   gemeente,
   out_path = ".",
   re_download = TRUE,
-  cbs_jaar = c("2018", "2021")
+  cbs_jaar = c("2018", "2021"),
+  kws = FALSE,
+  kws_jaar = 2021
 )
 }
 \arguments{
