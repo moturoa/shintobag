@@ -5,8 +5,6 @@ bagSelectUI <- function(id,
                         woonplaats_multiple = FALSE,
                         reset_button = TRUE){
 
-  ui_straat <- match.arg(ui_straat)
-
   ns <- NS(id)
 
   tagList(
