@@ -53,7 +53,7 @@ get_bag <- function(gemeente, con = NULL, ...){
 add_bag_adres_kolommen <- function(data){
 
   dplyr::mutate(data,
-                 huisnummer = tidyr::replace_na(huisnummer, ""),
+                 huisnummer = tidyr::replace_na(as.character(huisnummer), ""),
                  huisletter = tidyr::replace_na(huisletter, ""),
                  huisnummertoevoeging = tidyr::replace_na(huisnummertoevoeging, ""),
                  huisnummerhuisletter = paste0(huisnummer, huisletter, " ", huisnummertoevoeging),
