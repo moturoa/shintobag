@@ -478,8 +478,8 @@ download_gemeente_opendata <- function(gemeente,
     # buurt_naam, wijk_naam toevoegen op basis van locatie
     suppressMessages({
       bag <- bag %>%
-        sf::st_join(dplyr::select(geo$buurten, buurt_naam = bu_naam)) %>%
-        sf::st_join(dplyr::select(geo$wijken, wijk_naam = wk_naam)) %>%
+        sf::st_join(dplyr::select(geo$buurten, buurt_naam = bu_naam, buurt_code = bu_code)) %>%
+        sf::st_join(dplyr::select(geo$wijken, wijk_naam = wk_naam, wijk_code = wk_code)) %>%
         shintobag::add_bag_adres_kolommen()
     })
 
