@@ -10,10 +10,12 @@ shinto_db_connection <- function(what,
                                  file = getOption("shintobag_conf", "conf/config.yml"),
                                  port_default = 5432,
                                  allow_default_fallback = FALSE,
-                                 pool = FALSE){
+                                 pool = FALSE,
+                                 config_entry = NULL){
 
-
-  config_entry <- Sys.getenv("R_CONFIG_ACTIVE", "default")
+  if(is.null(config_entry)){
+    config_entry <- Sys.getenv("R_CONFIG_ACTIVE", "default")  
+  }
 
   conf <- config::get(value = what,
                       config = config_entry,
