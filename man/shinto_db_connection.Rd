@@ -7,14 +7,18 @@
 shinto_db_connection(
   what,
   file = getOption("shintobag_conf", "conf/config.yml"),
-  port = 5432,
-  pool = FALSE
+  port_default = 5432,
+  allow_default_fallback = FALSE,
+  pool = FALSE,
+  config_entry = NULL
 )
 }
 \arguments{
 \item{what}{Welke database connectie in het config bestand? (bv. "BAGdata")}
 
 \item{file}{Lokatie van het config bestand, normaal gezet via \verb{options(shintobag_conf = /path/to/file)}}
+
+\item{port_default}{The default port if missing from config ("dbport")}
 
 \item{pool}{Logical. Als TRUE, gebruikt \code{pool::dbPool}, anders \code{DBI::dbConnect}}
 }
