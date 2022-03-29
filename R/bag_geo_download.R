@@ -291,7 +291,7 @@ get_gemeente_geo <- function(gemeente, jaar = c("2018","2021"),
 
 #' Zoek data binnen een polygon
 #' @details Voor geavanceerd gebruik.
-#' @param polygon Sf-kolom, projectie 28992
+#' @param polygon Sf-kolom, projectie 28992 
 #' @param con Database connectie
 #' @param table Naam van de table, inclusief schema ("latest.adres")
 #' @param geocolumn Naam van de kolom met geo-info in de tabel
@@ -307,11 +307,13 @@ get_data_polygon <- function(polygon,
 
   st_function <- match.arg(st_function)
 
-  polygon_txt <- sf::st_as_text(polygon)
+  if(!is.character(polygon)){
+    polygon <- sf::st_as_text(polygon)  
+  }
 
   out <- sf::st_read(con,
                  query = glue("select * from {table} as geodata",
-                              " where {st_function}(ST_GeomFromText('{polygon_txt}', 28992),",
+                              " where {st_function}(ST_GeomFromText('{polygon}', 28992),",
                               " geodata.{geocolumn})"))
 
   # Zet projectie (wordt in principe meegeleverd maar niet altijd)
@@ -321,6 +323,7 @@ get_data_polygon <- function(polygon,
   are <- as.numeric(sf::st_area(out[[geocolumn]]))
   out <- out[are < 10^9,]
 
+  # Als we polygonen hebben gezocht, verwerk de data iets verder.
   if(isTRUE(unique(sf::st_geometry_type(out[[geocolumn]]))[1] != "POINT")){
 
     # Vind (weer!) de intersecting polygons.
