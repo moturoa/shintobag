@@ -307,13 +307,11 @@ get_data_polygon <- function(polygon,
 
   st_function <- match.arg(st_function)
 
-  if(!is.character(polygon)){
-    polygon <- sf::st_as_text(polygon)  
-  }
-
+  polygon_txt <- sf::st_as_text(polygon)  
+  
   out <- sf::st_read(con,
                  query = glue("select * from {table} as geodata",
-                              " where {st_function}(ST_GeomFromText('{polygon}', 28992),",
+                              " where {st_function}(ST_GeomFromText('{polygon_txt}', 28992),",
                               " geodata.{geocolumn})"))
 
   # Zet projectie (wordt in principe meegeleverd maar niet altijd)
