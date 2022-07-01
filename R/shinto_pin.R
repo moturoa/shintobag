@@ -1,6 +1,5 @@
 #' R6 Class with methods for rsconnect data pins
 #' @description Get BAG & CBS data in Shiny applications, fast and without hassle.
-#' @export
 shintoPin <- R6::R6Class(
   public = list(
 

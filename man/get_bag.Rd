@@ -4,10 +4,19 @@
 \alias{get_bag}
 \title{Download the BAG}
 \usage{
-get_bag(gemeente, con = NULL, ...)
+get_bag(
+  gemeente,
+  con = NULL,
+  table = c("adres_full", "adres_plus", "adres"),
+  ...
+)
 }
 \arguments{
-\item{gemeente}{Bv. "Rozendaal"}
+\item{gemeente}{Bv. "Rozendaal" (niet vectorized)}
+
+\item{con}{DB connectie naar data_bag}
+
+\item{table}{"adres_full" (default),"adres_plus" of "adres"}
 }
 \description{
 Download the BAG for one Gemeente at a time. Result is an \code{sf} spatial dataframe.

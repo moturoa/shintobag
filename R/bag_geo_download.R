@@ -16,10 +16,14 @@ make_sql <- function(dbname, gemeente = NULL){
 
 #' Download the BAG
 #' @description Download the BAG for one Gemeente at a time. Result is an `sf` spatial dataframe.
-#' @param gemeente Bv. "Rozendaal"
+#' @param gemeente Bv. "Rozendaal" (niet vectorized)
+#' @param con DB connectie naar data_bag
+#' @param table "adres_full" (default),"adres_plus" of "adres"
 #' @export
-get_bag <- function(gemeente, con = NULL, ...){
+get_bag <- function(gemeente, con = NULL, table = c("adres_full","adres_plus","adres"), ...){
 
+  table <- match.arg(table)
+  
   if(missing(gemeente)){
     stop("BAG extract werkt per gemeente.")
   }
@@ -29,7 +33,7 @@ get_bag <- function(gemeente, con = NULL, ...){
     on.exit(DBI::dbDisconnect(con))
   }
 
-  sql <- "select * from bagactueel.adres_full where gemeentenaam = ?gem"
+  sql <- as.character(glue::glue("select * from bagactueel.{table} where gemeentenaam = ?gem"))
   sql <- sqlInterpolate(DBI::ANSI(), sql, gem = gemeente)
 
   out <- sf::st_read(con, query = sql) %>%
