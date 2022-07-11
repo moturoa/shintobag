@@ -117,7 +117,7 @@ project_cbs_geo <- function(x){
 #' @export
 get_geo <- function(gemeente = NULL,
                     what = c("grens","buurten","wijken"),
-                    jaar = c("2018", "2021"),
+                    jaar = c("2018", "2021", "2022"),
                     kws = FALSE,
                     kws_jaar = 2021,
                     con = NULL, ...){
@@ -136,11 +136,17 @@ get_geo <- function(gemeente = NULL,
                  wijken = "wijk_2018_v2",
                  buurten = "buurt_2018_v2"
     )
-  } else {
+  } else if(jaar == "2021"){
     tb <- switch(what,
                  grens = "gemeente_2021",
                  wijken = "wijk_2021",
                  buurten = "buurt_2021"
+    )
+  } else if(jaar == "2022"){
+    tb <- switch(what,
+                 grens = "gemeente_2022",
+                 wijken = "wijk_2022",
+                 buurten = "buurt_2022"
     )
   }
 
