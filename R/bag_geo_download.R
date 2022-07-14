@@ -104,9 +104,13 @@ proj_4326 <- function(data){
 # helper functie voor CBS tabellen, die hebben geen CRS info,
 # stellen we in, dan converteren
 project_cbs_geo <- function(x){
-  x %>%
-    st_set_crs(28992) %>%
-    st_transform(4326)
+  
+  suppressWarnings({
+    x %>%
+      st_set_crs(28992) %>%
+      st_transform(4326)  
+  })
+  
 }
 
 
@@ -150,14 +154,22 @@ get_geo <- function(gemeente = NULL,
     )
   }
 
+  out <- sf::st_read(con, query = make_sql(tb, gemeente)) 
 
-  out <- sf::st_read(con, query = make_sql(tb, gemeente)) %>%
-    project_cbs_geo
+  if(nrow(out) == 0){
+    stop(paste0("Gemeente '",gemeente, "' niet gevonden in data_cbs"))
+  }  
+  
+  # Fix names. First column must be the region code (see add_kws)
+  if(what == "grens")out <- dplyr::relocate(out, "gm_code")
+  if(what == "wijken")out <- dplyr::relocate(out, "wk_code")
+  if(what == "buurten")out <- dplyr::relocate(out, "bu_code")
+  
+  out <- project_cbs_geo(out)
 
   if(kws){
     assert_kws_peiljaar(kws_jaar)
-    out <- out %>%
-      add_kws(kws_jaar, con)
+    out <- add_kws(out, kws_jaar, con)
   }
 
 out
@@ -226,10 +238,14 @@ add_kws <- function(data, peiljaar, con = NULL){
   gem <- unique(data$gm_naam)
 
   data_kws <- get_kws(gem, s_regio, peiljaar, con = con)
+  
+  if(nrow(data_kws) == 0){
+    warning(paste0("Geen kerncijfers voor Gemeente '",gem,"' in ",peiljaar," gevonden."))
+    return(data)
+  }
 
-  data_geo <- get_geo(gem, s_regio, jaar = "2021", con = con) # niet peiljaar, maar jaar van grenzen.
-
-  left_join(select(data_geo, - gm_naam), data_kws, by = key_col)
+  double_names <- setdiff(intersect(names(data), names(data_kws)), key_col)
+  left_join(select(data, - all_of(double_names)), data_kws, by = key_col)
 
 }
 
@@ -277,12 +293,12 @@ make_kws_select_choices <- function(choices = NULL){
 #' @param kws_jaar Kerncijfers voor welk jaar toevoegen?
 #' @rdname get_gemeente_geo
 #' @export
-get_gemeente_geo <- function(gemeente, jaar = c("2018","2021"),
+get_gemeente_geo <- function(gemeente, 
+                             jaar,
                              kws = FALSE,
                              kws_jaar = 2021,
                              ...){
 
-  jaar <- match.arg(jaar)
   cbs <- shinto_db_connection("data_cbs", ...)
   on.exit(DBI::dbDisconnect(cbs))
 
@@ -459,19 +475,21 @@ rbind_geo <- function(lis){
 #'  with components: wijken, buurten, grens.
 #' @param gemeente E.g. "Eindhoven"
 #' @param out_path The relative path to write the datasets to.
+#' @param rds If TRUE, writes RDS of the sf-dataframe
+#' @param feather If TRUE, writes a feather of the non-sf dataframe
 #' @export
 download_gemeente_opendata <- function(gemeente,
                                        out_path = ".",
                                        re_download = TRUE,
-                                       cbs_jaar = c("2018","2021"),
+                                       cbs_jaar,
                                        kws = FALSE,
-                                       kws_jaar = 2021){
+                                       kws_jaar = 2021,
+                                       rds = TRUE,
+                                       feather = FALSE){
 
   fn_geo <- file.path(out_path, paste0("geo_", gemeente, ".rds"))
   fn_bag_1 <- file.path(out_path, paste0("bag_",gemeente,"_sf.rds"))
   fn_bag_2 <- file.path(out_path, paste0("bag_",gemeente,".feather"))
-
-  cbs_jaar <- match.arg(cbs_jaar)
 
   # gemeente grenzen, wijk, buurt grenzen
   if(!file.exists(fn_geo) | re_download){
@@ -495,13 +513,18 @@ download_gemeente_opendata <- function(gemeente,
     })
 
     # sf-spatial
-    saveRDS(bag, fn_bag_1)
+    if(rds){
+      saveRDS(bag, fn_bag_1)  
+    }
+    
 
     # tibble, feather
     bag <- tibble::as_tibble(bag)
     bag$geopunt <- NULL
 
-    feather::write_feather(bag, fn_bag_2)
+    if(feather){
+      feather::write_feather(bag, fn_bag_2)
+    }
 
   }
 

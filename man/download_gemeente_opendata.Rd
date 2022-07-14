@@ -8,15 +8,21 @@ download_gemeente_opendata(
   gemeente,
   out_path = ".",
   re_download = TRUE,
-  cbs_jaar = c("2018", "2021"),
+  cbs_jaar,
   kws = FALSE,
-  kws_jaar = 2021
+  kws_jaar = 2021,
+  rds = TRUE,
+  feather = FALSE
 )
 }
 \arguments{
 \item{gemeente}{E.g. "Eindhoven"}
 
 \item{out_path}{The relative path to write the datasets to.}
+
+\item{rds}{If TRUE, writes RDS of the sf-dataframe}
+
+\item{feather}{If TRUE, writes a feather of the non-sf dataframe}
 }
 \description{
 Downloads wijk, buurt, gemeente borders, and the BAG for a Gemeente.
