@@ -2,26 +2,35 @@
 % Please edit documentation in R/db_connecties.R
 \name{shinto_db_connection}
 \alias{shinto_db_connection}
+\alias{global_db_connection}
 \title{Make a database connection}
 \usage{
 shinto_db_connection(
   what,
   file = getOption("shintobag_conf", "conf/config.yml"),
-  port_default = 5432,
+  search_global = FALSE,
   allow_default_fallback = FALSE,
   pool = FALSE,
   config_entry = NULL
 )
+
+global_db_connection(...)
 }
 \arguments{
 \item{what}{Welke database connectie in het config bestand? (bv. "BAGdata")}
 
 \item{file}{Lokatie van het config bestand, normaal gezet via \verb{options(shintobag_conf = /path/to/file)}}
 
-\item{port_default}{The default port if missing from config ("dbport")}
+\item{search_global}{If TRUE, ignores 'file' argument and tries to find global config file.}
 
 \item{pool}{Logical. Als TRUE, gebruikt \code{pool::dbPool}, anders \code{DBI::dbConnect}}
+
+\item{port_default}{The default port if missing from config ("dbport")}
 }
 \description{
 Make a connection with RPostgres to one of the Shinto Labs databases.
+}
+\details{
+\code{global_db_connection} is a shorthand for \code{shinto_db_connection} with \code{search_global = TRUE}.
+Use this option to store encrypted passwords in a
 }
