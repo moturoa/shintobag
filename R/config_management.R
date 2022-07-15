@@ -139,7 +139,8 @@ read_config <- function(file){
 
 
 #' Makes a config entry list 
-#' @description Used by [add_config_entry()]. See there for help.
+#' @description Used by [add_config_entry()]. See there for help. This function is
+#' usually not needed by the user.
 #' @examples
 #' library(glue)
 #' db_entry_list("Waalre","wbm_waalre", infra = "dev2", local = FALSE)  

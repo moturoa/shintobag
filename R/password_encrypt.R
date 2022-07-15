@@ -100,7 +100,7 @@ encrypt_config_file <- function(file,
                                 password_names = "dbpassword"){
   
   out_file <- paste0(file, suffix)
-  cfg <- yaml::read_yaml(file)
+  cfg <- read_config(file)
   
   n_dec <- 0
   n_notdec <- 0
@@ -131,6 +131,57 @@ encrypt_config_file <- function(file,
   
   yaml::write_yaml(cfg, out_file)
 }
+
+
+
+#' Decrypt a config file
+decrypt_config_file <- function(file, file_out,
+                                db_config = NULL,  # keep only entries that appear in this list
+                                secret = Sys.getenv("SHINTO_PASS_SECRET"),
+                                password_names = "dbpassword"){
+  
+  # normally, the global config
+  cfg <- read_config(file)
+  
+  # db_config list (app db config)
+  dbc <- read_config(db_config)
+  
+  # loop over sections (development, production, etc.)
+  for(i in seq_along(cfg)){
+    
+    x <- cfg[[i]]
+    section <- names(cfg)[i]
+    
+    # db_config has no default section; defaults must appear in development
+    if(section == "default")section <- "development"
+    
+    for(k in seq_along(x)){
+      
+      if(!names(x)[k] %in% names(dbc[[section]])){
+        cfg[[i]][[k]] <- NULL
+      } else {
+        
+        ind <- which(names(cfg[[i]][[k]]) %in% password_names)
+        if(length(ind) > 0){
+          pass <- cfg[[i]][[k]][[ind]]
+          cfg[[i]][[k]][[ind]] <- decrypt(pass, secret = secret)
+        }
+      
+      }
+    }
+  }
+  
+  yaml::write_yaml(cfg, file_out)
+    
+
+}
+
+
+if(FALSE){
+  decrypt_config_file(open_global_config(), "test/test.yml", db_config = "test/db_connections.yaml")  
+}
+  
+
 
 
 get_shinto_pass_secret <- function(){

@@ -24,9 +24,13 @@ add_db_connections_to_global <- function(db_config){
 }
 
 get_global_config_filename <- function(){
-  Sys.getenv("SHINTO_GLOBAL_DB_CONFIG")
+  fn <- Sys.getenv("SHINTO_GLOBAL_DB_CONFIG")
+  if(fn == ""){
+    fn <- file.path(path.expand("~"),".shinto/config.yaml")
+  }
 }
 
+#' @export
 open_global_config <- function(){
   
   fn <- get_global_config_filename()
@@ -34,11 +38,6 @@ open_global_config <- function(){
   ext <- tools::file_ext(fn)
   if(!ext %in% c("yaml","yml")){
     stop("config filename extension must be 'yaml' or 'yml'")
-  }
-  
-  if(fn == ""){
-    stop(paste("Set the environment variable SHINTO_GLOBAL_DB_CONFIG to your global shinto db config file.",
-               "If it does not exist, it will be created for you."))
   }
   
   if(!file.exists(fn)){

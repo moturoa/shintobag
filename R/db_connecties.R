@@ -22,12 +22,7 @@ shinto_db_connection <- function(what,
   }
 
   if(search_global){
-    env <- get_global_config_filename()
-    if(env == ""){
-      message("SHINTO_GLOBAL_DB_CONFIG environment variable not set; continuing with standard config file")
-    } else {
-      file <- open_global_config()  
-    }
+    file <- open_global_config()
   }
   
   conf <- config::get(value = what,
@@ -75,6 +70,6 @@ shinto_db_connection <- function(what,
 #' @export
 #' @rdname shinto_db_connection
 global_db_connection <- function(...){
-  shinto_db_connection(..., global_search = TRUE)  
+  shinto_db_connection(..., search_global = TRUE)  
 }
 
