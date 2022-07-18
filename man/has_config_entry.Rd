@@ -9,10 +9,10 @@ check_config <- function(name, where, file = "conf/config.yml"){}
 has_config_entry(name, conf, where)
 }
 \description{
-\preformatted{conf <- read_config(file)
+\if{html}{\out{<div class="sourceCode">}}\preformatted{conf <- read_config(file)
 
 for(nm in name)\{
-}
+}\if{html}{\out{</div>}}
 }
 \details{
 

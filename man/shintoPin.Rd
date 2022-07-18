@@ -18,21 +18,21 @@ Get BAG & CBS data in Shiny applications, fast and without hassle.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{shintoPin$new()}}
-\item \href{#method-register}{\code{shintoPin$register()}}
-\item \href{#method-pin_bag_name}{\code{shintoPin$pin_bag_name()}}
-\item \href{#method-pin_cbs_name}{\code{shintoPin$pin_cbs_name()}}
-\item \href{#method-pin}{\code{shintoPin$pin()}}
-\item \href{#method-pin_bag_cbs_data}{\code{shintoPin$pin_bag_cbs_data()}}
-\item \href{#method-get_pin_data}{\code{shintoPin$get_pin_data()}}
-\item \href{#method-get_bag_pin}{\code{shintoPin$get_bag_pin()}}
-\item \href{#method-get_cbs_pin}{\code{shintoPin$get_cbs_pin()}}
-\item \href{#method-clone}{\code{shintoPin$clone()}}
+\item \href{#method-NA-new}{\code{shintoPin$new()}}
+\item \href{#method-NA-register}{\code{shintoPin$register()}}
+\item \href{#method-NA-pin_bag_name}{\code{shintoPin$pin_bag_name()}}
+\item \href{#method-NA-pin_cbs_name}{\code{shintoPin$pin_cbs_name()}}
+\item \href{#method-NA-pin}{\code{shintoPin$pin()}}
+\item \href{#method-NA-pin_bag_cbs_data}{\code{shintoPin$pin_bag_cbs_data()}}
+\item \href{#method-NA-get_pin_data}{\code{shintoPin$get_pin_data()}}
+\item \href{#method-NA-get_bag_pin}{\code{shintoPin$get_bag_pin()}}
+\item \href{#method-NA-get_cbs_pin}{\code{shintoPin$get_cbs_pin()}}
+\item \href{#method-unknown-clone}{\code{shintoPin$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-NA-new"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-new}{}}}
 \subsection{Method \code{new()}}{
 Create a new shinto rsconnect pin object
 \subsection{Usage}{
@@ -50,8 +50,8 @@ Create a new shinto rsconnect pin object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-register"></a>}}
-\if{latex}{\out{\hypertarget{method-register}{}}}
+\if{html}{\out{<a id="method-NA-register"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-register}{}}}
 \subsection{Method \code{register()}}{
 Register the rsconnect board
 \subsection{Usage}{
@@ -67,8 +67,8 @@ Register the rsconnect board
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-pin_bag_name"></a>}}
-\if{latex}{\out{\hypertarget{method-pin_bag_name}{}}}
+\if{html}{\out{<a id="method-NA-pin_bag_name"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-pin_bag_name}{}}}
 \subsection{Method \code{pin_bag_name()}}{
 Name of the pin for the BAG for a gemeente
 \subsection{Usage}{
@@ -84,8 +84,8 @@ Name of the pin for the BAG for a gemeente
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-pin_cbs_name"></a>}}
-\if{latex}{\out{\hypertarget{method-pin_cbs_name}{}}}
+\if{html}{\out{<a id="method-NA-pin_cbs_name"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-pin_cbs_name}{}}}
 \subsection{Method \code{pin_cbs_name()}}{
 Name of the pin for the CBS for a gemeente
 \subsection{Usage}{
@@ -101,8 +101,8 @@ Name of the pin for the CBS for a gemeente
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-pin"></a>}}
-\if{latex}{\out{\hypertarget{method-pin}{}}}
+\if{html}{\out{<a id="method-NA-pin"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-pin}{}}}
 \subsection{Method \code{pin()}}{
 Store a pin on the rsconnect board. Simple wrapper around pin::pin, with typical settings.
 \subsection{Usage}{
@@ -122,8 +122,8 @@ Store a pin on the rsconnect board. Simple wrapper around pin::pin, with typical
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-pin_bag_cbs_data"></a>}}
-\if{latex}{\out{\hypertarget{method-pin_bag_cbs_data}{}}}
+\if{html}{\out{<a id="method-NA-pin_bag_cbs_data"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-pin_bag_cbs_data}{}}}
 \subsection{Method \code{pin_bag_cbs_data()}}{
 Create a pin for the BAG and CBS data for a gemeente.
 \subsection{Usage}{
@@ -139,8 +139,8 @@ Create a pin for the BAG and CBS data for a gemeente.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_pin_data"></a>}}
-\if{latex}{\out{\hypertarget{method-get_pin_data}{}}}
+\if{html}{\out{<a id="method-NA-get_pin_data"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-get_pin_data}{}}}
 \subsection{Method \code{get_pin_data()}}{
 Get a pinned dataset
 \subsection{Usage}{
@@ -156,8 +156,8 @@ Get a pinned dataset
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_bag_pin"></a>}}
-\if{latex}{\out{\hypertarget{method-get_bag_pin}{}}}
+\if{html}{\out{<a id="method-NA-get_bag_pin"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-get_bag_pin}{}}}
 \subsection{Method \code{get_bag_pin()}}{
 Get pinned BAG for a gemeente
 \subsection{Usage}{
@@ -173,8 +173,8 @@ Get pinned BAG for a gemeente
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_cbs_pin"></a>}}
-\if{latex}{\out{\hypertarget{method-get_cbs_pin}{}}}
+\if{html}{\out{<a id="method-NA-get_cbs_pin"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-get_cbs_pin}{}}}
 \subsection{Method \code{get_cbs_pin()}}{
 Get pinned CBS for a gemeente
 \subsection{Usage}{
@@ -190,8 +190,8 @@ Get pinned CBS for a gemeente
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-unknown-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-unknown-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

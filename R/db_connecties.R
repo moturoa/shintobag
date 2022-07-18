@@ -39,7 +39,7 @@ shinto_db_connection <- function(what,
     # conf <- config::get(value = what,
     #                     config = "default",
     #                     file = file)
-    warning("'allow_default_fallback' argument is deprecated.")
+    stop("'allow_default_fallback' argument is deprecated. Configure all connections.")
   }
 
   if(is.null(conf)){

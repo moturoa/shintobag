@@ -15,7 +15,8 @@ db_entry_list(
 )
 }
 \description{
-Used by \code{\link[=add_config_entry]{add_config_entry()}}. See there for help.
+Used by \code{\link[=add_config_entry]{add_config_entry()}}. See there for help. This function is
+usually not needed by the user.
 }
 \examples{
 library(glue)

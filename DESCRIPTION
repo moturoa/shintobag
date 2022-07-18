@@ -1,7 +1,7 @@
 Package: shintobag
 Type: Package
 Title: Work with the BAG
-Version: 0.6
+Version: 0.6-2
 Author: Remko Duursma
 Maintainer: Remko Duursma <remko@shintolabs.nl>
 Description: Match untidy addresses to the BAG, download the BAG, work with the BAG.
@@ -10,7 +10,7 @@ Imports: safer, utils, htmltools, yaml
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 Suggests: 
     knitr,
     rmarkdown
