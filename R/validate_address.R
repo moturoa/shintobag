@@ -8,7 +8,9 @@
 #' @param bag A BAG extract with columns addresseerbaarobject_id,huisnummer,huisletter,
 #' huisnummertoevoeging
 #' @param bag_columns Which columns to join onto data
+#' @importFrom tidyr replace_na
 #' @export
+#' @rdname validate_address
 validate_address <- function(data, adres_column, bag, 
                              bag_columns = c("adresseerbaarobject_id",
                                              "openbareruimtenaam",
@@ -55,9 +57,9 @@ merge_bag_columns <- function(data, bag, bag_columns = "adresseerbaarobject_id")
   # deze hebben meerdere pandid per adres (geen idee waarom).
   bag <- distinct(bag, adresseerbaarobject_id, .keep_all = TRUE) %>%
     mutate(huisnummer = as.character(huisnummer), # was vroeger char
-           huisletter = replace_na(huisletter, ""),
-           huisnummer = replace_na(huisnummer, ""),
-           huisnummertoevoeging = replace_na(huisnummertoevoeging, ""))
+           huisletter = tidyr::replace_na(huisletter, ""),
+           huisnummer = tidyr::replace_na(huisnummer, ""),
+           huisnummertoevoeging = tidyr::replace_na(huisnummertoevoeging, ""))
   
   bag_columns <- union(adres_columns, bag_columns)
   bag <- dplyr::select(bag,dplyr::all_of(bag_columns))
@@ -90,8 +92,8 @@ space_huisnummer_huisletter <- function(x){
 adres_huisnummer_etc <- function(x){
   out <- strsplit(x, "[a-z|A-Z]{2,}")  
   
-  vapply(out, function(x)x[length(x)], character(1)) %>% 
-    stringr::str_trim
+  vapply(out, function(x)x[length(x)], FUN.VALUE = character(1)) %>% 
+    stringr::str_trim(.)
 }
 
 
@@ -212,6 +214,8 @@ fix_openbareruimtenaam_v <- function(x, bag){
   
 }
 
+#' @export
+#' @rdname validate_address
 split_adres_field <- function(x, bag){
   
   hh <- adres_huisnummer_etc(x) %>% 

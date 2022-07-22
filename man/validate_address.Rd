@@ -2,6 +2,7 @@
 % Please edit documentation in R/validate_address.R
 \name{validate_address}
 \alias{validate_address}
+\alias{split_adres_field}
 \title{Split a merged adres field ("Huisstraat 1A 12") and join with BAG}
 \usage{
 validate_address(
@@ -11,6 +12,8 @@ validate_address(
   bag_columns = c("adresseerbaarobject_id", "openbareruimtenaam", "huisnummer",
     "huisletter", "huisnummertoevoeging")
 )
+
+split_adres_field(x, bag)
 }
 \arguments{
 \item{data}{A dataframe with an adres column}
