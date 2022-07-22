@@ -76,6 +76,7 @@ config_is_encrypted <- function(file,
 }
 
 string_is_encrypted <- function(string, secret = Sys.getenv("SHINTO_PASS_SECRET")){
+  if(secret == "")return(FALSE)
   !is.na(decrypt(string, secret = secret))
 }
 
