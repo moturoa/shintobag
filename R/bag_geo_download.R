@@ -36,8 +36,14 @@ get_bag <- function(gemeente, con = NULL, table = c("adres_full","adres_plus","a
   sql <- as.character(glue::glue("select * from bagactueel.{table} where gemeentenaam = ?gem"))
   sql <- sqlInterpolate(DBI::ANSI(), sql, gem = gemeente)
 
-  out <- sf::st_read(con, query = sql) %>%
-    st_transform(crs = 4326)
+  out <- sf::st_read(con, query = sql) 
+  
+  if(nrow(out) == 0){
+    warning(glue::glue("gemeente '{gemeente}' niet gevonden in {table}!"))
+    return(NULL)
+  }
+  
+  out <- sf::st_transform(out, crs = 4326)
 
   out
 }

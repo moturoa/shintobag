@@ -28,6 +28,10 @@ shinto_db_connection <- function(what,
   conf <- config::get(value = what,
                       config = config_entry,
                       file = file)
+  
+  if(is.null(conf)){
+    stop(glue::glue("Connection entry '{what}' not found in file '{file}' (section '{config_entry}')"))
+  }
 
   # If password is encrypted, decrypt it before connecting
   if(string_is_encrypted(conf$dbpassword)){
