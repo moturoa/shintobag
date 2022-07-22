@@ -59,7 +59,7 @@ google_search_url <- function(d){
 #' Google Streetview, de Kadaster BAG Viewer, en een Google search naar het adres.
 #' De gegeven rij uit het BAG moet de sf-dataframe versie zijn, met kolommen 'bag_adres_full' e.a.,
 #' toegevoegd met [add_bag_adres_kolommen()]
-#' (of een recente download met \code{[download_gemeente_opendata]).
+#' (of een recente download met [download_gemeente_opendata()]).
 #' @export
 externe_bronnen_lokatie <- function(d){
 

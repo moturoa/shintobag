@@ -22,6 +22,7 @@ search_bag_address(
 \item{progressbar}{If TRUE (the default), displays a simple progress bar.}
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Use 'validate_address' instead.
 Searches for addresses in a free text field, which may also contain other text.
 For each field, all BAG addresses are searched - so this function is slow for larger queries, and
 especially larger BAG datasets.

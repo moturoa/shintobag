@@ -14,6 +14,7 @@ make_address_field(data, columns = NULL, template = NULL)
 \item{template}{Character string. See Details.}
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Use 'validate_address' instead.
 Used to define an address field, as a starting point to match the address in the BAG.
 }
 \details{

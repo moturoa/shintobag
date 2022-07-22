@@ -13,5 +13,9 @@ externe_bronnen_lokatie(d)
 Tabel met links naar externe bronnen
 }
 \details{
-
+Maakt een \code{div} (class = "box_externe_bronnen") met daaring links naar
+Google Streetview, de Kadaster BAG Viewer, en een Google search naar het adres.
+De gegeven rij uit het BAG moet de sf-dataframe versie zijn, met kolommen 'bag_adres_full' e.a.,
+toegevoegd met \code{\link[=add_bag_adres_kolommen]{add_bag_adres_kolommen()}}
+(of een recente download met \code{\link[=download_gemeente_opendata]{download_gemeente_opendata()}}).
 }

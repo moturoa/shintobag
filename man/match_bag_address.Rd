@@ -14,7 +14,7 @@ match_bag_address(x, ...)
 \item{bag_columns}{Which columns from the BAG to return as a result.}
 }
 \description{
-Match addresses to the BAG
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Use 'validate_address' instead.
 }
 \examples{
 

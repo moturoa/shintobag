@@ -1,6 +1,7 @@
 
 #' Define an address field
-#' @description Used to define an address field, as a starting point to match the address in the BAG.
+#' @description `r lifecycle::badge('deprecated')` Use 'validate_address' instead. 
+#' Used to define an address field, as a starting point to match the address in the BAG.
 #' @param data Either a dataframe (if columns argument is used), or a vector (if template argument is used).
 #' @param columns List, see Details.
 #' @param template Character string. See Details.
@@ -137,6 +138,7 @@ print.adres_template <- print.adres_columns
 
 
 #' Match addresses to the BAG
+#' @description `r lifecycle::badge('deprecated')` Use 'validate_address' instead.
 #' @param x An address-field object, defined with `make_address_field`, see Examples.
 #' @param bag The BAG for this Gemeente (dataframe).
 #' @param bag_columns Which columns from the BAG to return as a result.
@@ -278,7 +280,8 @@ match_bag_address.adres_template <- function(x, bag, bag_columns = "all"){
 
 
 #' Search for BAG addresses in a text field
-#' @description Searches for addresses in a free text field, which may also contain other text.
+#' @description `r lifecycle::badge('deprecated')` Use 'validate_address' instead. 
+#' Searches for addresses in a free text field, which may also contain other text.
 #' For each field, all BAG addresses are searched - so this function is slow for larger queries, and
 #' especially larger BAG datasets.
 #' @param txt Free text field (vector)
