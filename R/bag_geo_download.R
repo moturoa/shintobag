@@ -184,8 +184,8 @@ out
 
 
 assert_kws_peiljaar <- function(peiljaar){
-  if(!all(peiljaar %in% 2013:2021)){
-    stop("Alleen data geupload tussen 2013 en 2021")
+  if(!all(peiljaar %in% 2013:2022)){
+    stop("Alleen data geupload tussen 2013 en 2022")
   }
 }
 
