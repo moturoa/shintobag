@@ -5,6 +5,9 @@
 #' Much preferred to the previous use of e.g. 'data_public/.../bag.rds' because 
 #' we can reuse the same (up to date!) copy of the BAG table, and we do not have
 #' to redeploy an application if only the BAG has updated.
+#' @param gemeentes Vector of gemeente naam to download/read
+#' @param cache_folder The **local** folder to use for caching. Ignored on rsconnect,
+#' where a fixed path is used ("/data/bag" is a share on rsconnect dev and prod).
 #' @export
 get_bag_from_cache <- function(gemeentes, cache_folder = "cache"){
   

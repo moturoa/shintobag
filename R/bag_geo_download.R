@@ -34,7 +34,7 @@ get_bag <- function(gemeente, con = NULL, table = c("adres_full","adres_plus","a
   }
 
   sql <- as.character(glue::glue("select * from bagactueel.{table} where gemeentenaam = ?gem"))
-  sql <- sqlInterpolate(DBI::ANSI(), sql, gem = gemeente)
+  sql <- DBI::sqlInterpolate(DBI::ANSI(), sql, gem = gemeente)
 
   out <- sf::st_read(con, query = sql) 
   
@@ -86,23 +86,23 @@ add_bag_adres_kolommen <- function(data){
 #' @export
 proj_4326 <- function(data){
 
-  if(length(data) == 0 || all(st_is_empty(data))){
+  if(length(data) == 0 || all(sf::st_is_empty(data))){
     return(data)
   }
 
   if(st_geometry_type(data)[1] == "POLYGON"){
 
     if(is.null(dim(data))){
-      data <- st_zm(data)
+      data <- sf::st_zm(data)
     } else {
       col <- names(data)[sapply(data, function(x)inherits(x, "sfc_POLYGON"))][1]
 
-      data[[col]] <- st_zm(data[[col]])
+      data[[col]] <- sf::st_zm(data[[col]])
     }
 
   }
 
-  st_transform(data, 4326)
+  sf::st_transform(data, 4326)
 }
 
 
@@ -113,8 +113,8 @@ project_cbs_geo <- function(x){
   
   suppressWarnings({
     x %>%
-      st_set_crs(28992) %>%
-      st_transform(4326)  
+      sf::st_set_crs(28992) %>%
+      sf::st_transform(4326)  
   })
   
 }
@@ -221,8 +221,8 @@ get_kws <- function(gemeente,
     dplyr::filter(gm_naam %in% !!gemeente,
                   peiljaar %in% !!peiljaar,
                   regio_type == !!s_txt) %>%
-    collect %>%
-    rename(!!sym(gwb_txt):=gwb_code)
+    dplyr::collect %>%
+    dplyr::rename(!!rlang::sym(gwb_txt):=gwb_code)
 
 }
 
@@ -251,7 +251,7 @@ add_kws <- function(data, peiljaar, con = NULL){
   }
 
   double_names <- setdiff(intersect(names(data), names(data_kws)), key_col)
-  left_join(select(data, - all_of(double_names)), data_kws, by = key_col)
+  dplyr::left_join(select(data, - all_of(double_names)), data_kws, by = key_col)
 
 }
 
@@ -434,7 +434,7 @@ get_woonkernen <- function(grens, ...){
   con <- shinto_db_connection("data_top10nl", ...)
   on.exit(DBI::dbDisconnect(con))
 
-  grens <- st_transform(grens, 28992)
+  grens <- sf::st_transform(grens, 28992)
 
   out <- get_data_polygon(polygon = grens,
                           con = con,

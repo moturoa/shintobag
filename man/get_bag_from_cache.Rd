@@ -6,6 +6,12 @@
 \usage{
 get_bag_from_cache(gemeentes, cache_folder = "cache")
 }
+\arguments{
+\item{gemeentes}{Vector of gemeente naam to download/read}
+
+\item{cache_folder}{The \strong{local} folder to use for caching. Ignored on rsconnect,
+where a fixed path is used ("/data/bag" is a share on rsconnect dev and prod).}
+}
 \description{
 Given one or more gemeente's, read the file \verb{bag_<gemeente>_plus.rds}
 either from a local cache folder, or from a shared mount on Rstudio Connect.
