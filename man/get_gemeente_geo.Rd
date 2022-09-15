@@ -22,7 +22,7 @@ get_gemeente_geo(gemeente, jaar, kws = FALSE, kws_jaar = 2021, ...)
 
 \item{what}{Voor \code{get_geo}, "buurten", "wijken", of "grens"}
 
-\item{jaar}{Buurt wijk kaart "2018" of "2021"}
+\item{jaar}{CBS jaar ("2018", "2021", "2022")}
 
 \item{kws}{Kerncijfers toevoegen? (default: FALSE)}
 

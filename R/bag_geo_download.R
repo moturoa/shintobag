@@ -221,7 +221,7 @@ get_kws <- function(gemeente,
     dplyr::filter(gm_naam %in% !!gemeente,
                   peiljaar %in% !!peiljaar,
                   regio_type == !!s_txt) %>%
-    dplyr::collect %>%
+    dplyr::collect(.) %>%
     dplyr::rename(!!rlang::sym(gwb_txt):=gwb_code)
 
 }
@@ -293,6 +293,7 @@ make_kws_select_choices <- function(choices = NULL){
 #' @description Download gemeente, wijk, en buurt grenzen uit de CBS Wijk/Buurt kaart.
 #' @details De config moet 'data_cbs' connectie details bevatten (naar de CBS database).
 #' @param gemeente Gemeentenaam
+#' @param jaar CBS jaar ("2018", "2021", "2022")
 #' @param what Voor `get_geo`, "buurten", "wijken", of "grens"
 #' @param con Connectie naar de CBS database (als leeg, wordt automatisch aangemaakt)
 #' @param kws Kerncijfers toevoegen? (default: FALSE)
