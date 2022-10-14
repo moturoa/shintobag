@@ -4,13 +4,15 @@
 \alias{get_geo_from_cache}
 \title{Get GEO one or more gemeentes, local or server cache}
 \usage{
-get_geo_from_cache(gemeentes, cache_folder = "cache")
+get_geo_from_cache(gemeentes, cache_folder = "cache", ...)
 }
 \arguments{
 \item{gemeentes}{Vector of gemeente naam to download/read}
 
 \item{cache_folder}{The \strong{local} folder to use for caching. Ignored on rsconnect,
 where a fixed path is used ("/data/bag" is a share on rsconnect dev and prod).}
+
+\item{\dots}{Further arguments to \code{\link[=get_gemeente_geo]{get_gemeente_geo()}}}
 }
 \description{
 Given one or more gemeente's, read the file \verb{geo_<gemeente>.rds}

@@ -8,8 +8,9 @@
 #' @param gemeentes Vector of gemeente naam to download/read
 #' @param cache_folder The **local** folder to use for caching. Ignored on rsconnect,
 #' where a fixed path is used ("/data/bag" is a share on rsconnect dev and prod).
+#' @param \dots Further arguments to [get_gemeente_geo()]
 #' @export
-get_geo_from_cache <- function(gemeentes, cache_folder = "cache"){
+get_geo_from_cache <- function(gemeentes, cache_folder = "cache", ...){
   
   geo_file_name <- function(gemeente){
     glue("geo_{gemeente}.rds")
@@ -27,7 +28,7 @@ get_geo_from_cache <- function(gemeentes, cache_folder = "cache"){
     fn <- file.path(geo_path, geo_file_name(gemeente))
     if(!file.exists(fn)){
       message(glue("Downloading GEO for {gemeente} from PostgresDB, storing as RDS"))
-      data <- shintobag::get_gemeente_geo(gemeente, get_latest_data = TRUE)
+      data <- shintobag::get_gemeente_geo(gemeente, get_latest_data = TRUE, ...)
       saveRDS(data, fn)
     } else {
       message(glue("BAG for {gemeente} exists in cache"))
