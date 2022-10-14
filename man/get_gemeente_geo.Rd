@@ -15,7 +15,14 @@ get_geo(
   ...
 )
 
-get_gemeente_geo(gemeente, jaar, kws = FALSE, kws_jaar = 2021, ...)
+get_gemeente_geo(
+  gemeente,
+  jaar = NULL,
+  get_latest_data = TRUE,
+  kws = FALSE,
+  kws_jaar = 2021,
+  ...
+)
 }
 \arguments{
 \item{gemeente}{Gemeentenaam}
@@ -29,6 +36,8 @@ get_gemeente_geo(gemeente, jaar, kws = FALSE, kws_jaar = 2021, ...)
 \item{kws_jaar}{Kerncijfers voor welk jaar toevoegen?}
 
 \item{con}{Connectie naar de CBS database (als leeg, wordt automatisch aangemaakt)}
+
+\item{get_latest_data}{If TRUE, get most recent data in database}
 }
 \description{
 Download gemeente, wijk, en buurt grenzen uit de CBS Wijk/Buurt kaart.

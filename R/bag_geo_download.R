@@ -294,6 +294,7 @@ make_kws_select_choices <- function(choices = NULL){
 #' @details De config moet 'data_cbs' connectie details bevatten (naar de CBS database).
 #' @param gemeente Gemeentenaam
 #' @param jaar CBS jaar ("2018", "2021", "2022")
+#' @param get_latest_data If TRUE, get most recent data in database
 #' @param what Voor `get_geo`, "buurten", "wijken", of "grens"
 #' @param con Connectie naar de CBS database (als leeg, wordt automatisch aangemaakt)
 #' @param kws Kerncijfers toevoegen? (default: FALSE)
@@ -301,7 +302,8 @@ make_kws_select_choices <- function(choices = NULL){
 #' @rdname get_gemeente_geo
 #' @export
 get_gemeente_geo <- function(gemeente, 
-                             jaar,
+                             jaar = NULL,
+                             get_latest_data = TRUE,
                              kws = FALSE,
                              kws_jaar = 2021,
                              ...){
@@ -309,6 +311,11 @@ get_gemeente_geo <- function(gemeente,
   cbs <- shinto_db_connection("data_cbs", ...)
   on.exit(DBI::dbDisconnect(cbs))
 
+  # TODO has to be configured somewhere; we need bag/geo/cbs metadata tables
+  if(is.null(jaar) && get_latest_data){
+    jaar <- "2022"
+  }
+  
   out <- list(
     grens = get_geo(gemeente, "grens", con = cbs, jaar = jaar, kws = kws, kws_jaar = kws_jaar),
     wijken = get_geo(gemeente, "wijken", con = cbs, jaar = jaar, kws = kws, kws_jaar = kws_jaar),
