@@ -148,7 +148,7 @@ read_config <- function(file){
 db_entry_list <- function(name, dbname, dbuser = dbname, infra = c("dev2","p2"), 
                           local = FALSE, password = NULL, encrypt = FALSE){
   
-  msg <- glue("Password voor {dbname}, user {dbuser}, infra: {infra}")
+  msg <- glue::glue("Password voor {dbname}, user {dbuser}, infra: {infra}")
   
   if(is.null(password)){
     password <- rstudioapi::askForPassword(msg)  
@@ -225,7 +225,7 @@ get_host <- function(infra = c("dev2","p2"), local = FALSE){
   infra <- match.arg(infra)
   
   if(!local){
-    glue("postgres-{infra}.postgres.database.azure.com")
+    glue::glue("postgres-{infra}.postgres.database.azure.com")
   } else {
     "localhost"
   }
@@ -235,9 +235,9 @@ get_host <- function(infra = c("dev2","p2"), local = FALSE){
 get_dbuser <- function(dbuser, infra = c("dev2","p2"), local = FALSE){
   infra <- match.arg(infra)
   if(local){
-    glue("{dbuser}@postgres-{infra}")
+    glue::glue("{dbuser}@postgres-{infra}")
   } else {
-    glue("{dbuser}@postgres-{infra}.postgres.database.azure.com")
+    glue::glue("{dbuser}@postgres-{infra}.postgres.database.azure.com")
   }
   
 }

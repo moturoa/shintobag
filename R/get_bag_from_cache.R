@@ -12,7 +12,7 @@
 get_bag_from_cache <- function(gemeentes, cache_folder = "cache"){
   
   bag_file_name <- function(gemeente){
-    glue("bag_{gemeente}_plus.rds")
+    glue::glue("bag_{gemeente}_plus.rds")
   }
   
   bag_path <- ifelse(Sys.getenv("R_CONNECT_SERVER") == "",  # env var only on rsconnect
@@ -27,11 +27,11 @@ get_bag_from_cache <- function(gemeentes, cache_folder = "cache"){
     
     fn <- file.path(bag_path, bag_file_name(gemeente))
     if(!file.exists(fn)){
-      message(glue("Downloading BAG for {gemeente} from PostgresDB, storing as RDS"))
+      message(glue::glue("Downloading BAG for {gemeente} from PostgresDB, storing as RDS"))
       data <- shintobag::get_bag(gemeente, table = "adres_plus")
       saveRDS(data, fn)
     } else {
-      message(glue("BAG for {gemeente} exists in cache"))
+      message(glue::glue("BAG for {gemeente} exists in cache"))
     }
     
   }
@@ -55,7 +55,7 @@ get_bag_from_cache <- function(gemeentes, cache_folder = "cache"){
   
   }
   
-  flog.info(glue("BAG extracts read in {round(tm[3],1)}s."))
+  flog.info(glue::glue("BAG extracts read in {round(tm[3],1)}s."))
   
   
 return(bag)

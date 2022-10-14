@@ -265,7 +265,7 @@ match_bag_address.adres_template <- function(x, bag, bag_columns = "all"){
     if(is.na(nr))next
 
     # Huisnummer gevolgd door letter (huisletter, hopelijk) of 'word boundary' (space / eol)
-    mtch_huisnr[i] <- any(grepl(glue("(\\b|[a-z]){nr}(\\b|[a-z])"), txt_[i]))
+    mtch_huisnr[i] <- any(grepl(glue::glue("(\\b|[a-z]){nr}(\\b|[a-z])"), txt_[i]))
   }
 
   ff[!mtch_huisnr, ] <- NA

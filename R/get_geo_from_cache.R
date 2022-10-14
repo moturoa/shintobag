@@ -13,7 +13,7 @@
 get_geo_from_cache <- function(gemeentes, cache_folder = "cache", ...){
   
   geo_file_name <- function(gemeente){
-    glue("geo_{gemeente}.rds")
+    glue::glue("geo_{gemeente}.rds")
   }
   
   # TODO voor nu zelfde path als BAG
@@ -27,11 +27,11 @@ get_geo_from_cache <- function(gemeentes, cache_folder = "cache", ...){
     
     fn <- file.path(geo_path, geo_file_name(gemeente))
     if(!file.exists(fn)){
-      message(glue("Downloading GEO for {gemeente} from PostgresDB, storing as RDS"))
+      message(glue::glue("Downloading GEO for {gemeente} from PostgresDB, storing as RDS"))
       data <- shintobag::get_gemeente_geo(gemeente, get_latest_data = TRUE, ...)
       saveRDS(data, fn)
     } else {
-      message(glue("BAG for {gemeente} exists in cache"))
+      message(glue::glue("BAG for {gemeente} exists in cache"))
     }
     
   }
@@ -55,7 +55,7 @@ get_geo_from_cache <- function(gemeentes, cache_folder = "cache", ...){
     
   }
   
-  flog.info(glue("GEO layers read in {round(tm[3],1)}s."))
+  flog.info(glue::glue("GEO layers read in {round(tm[3],1)}s."))
   
   
   return(geo)
