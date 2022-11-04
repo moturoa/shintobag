@@ -6,22 +6,25 @@
 #' @export
 get_gemeente_osm <- function(gemeente, ...){
   
-  con <- shintobag::shinto_db_connection("data_osm", ...)  
+  con <- try(shintobag::shinto_db_connection("data_osm_nederland", ...)  )
+  if(inherits(con, "try-error")){
+    stop("Add 'data_osm_nederland' (user: datastraat) to config.yml")
+  }
   on.exit(DBI::dbDisconnect(con))
   
-  sql <- as.character(glue::glue("select * from osm.amenity where gm_naam = ?gem"))
-  sql <- DBI::sqlInterpolate(DBI::ANSI(), sql, gem = gemeente)
-  amenity <- dbGetQuery(con, sql) %>%
-    st_as_sf(wkt = "geopunt") %>%
-    st_set_crs(28992)
+  grens <- get_geo(gemeente, what = "grens")
   
-  sql <- as.character(glue::glue("select * from osm.shop where gm_naam = ?gem"))
-  sql <- DBI::sqlInterpolate(DBI::ANSI(), sql, gem = gemeente)
-  shop <- dbGetQuery(con, sql) %>%
-    st_as_sf(wkt = "geopunt") %>%
-    st_set_crs(28992)
+  # transform naar WGS84-pseudo mercator; volgens de OSM CRS
+  polygon <- grens$geom %>%
+    sf::st_transform(3857)
   
-  list(amenity = amenity, shop = shop)
+  polygon_txt <- sf::st_as_text(polygon)  
+  
+  # get data in polygon
+  sf::st_read(con, query = glue("select * from osmnl.planet_osm_point as geodata ",
+                                  " where st_contains(ST_GeomFromText('{polygon_txt}', 3857),",
+                                  " geodata.way)")) %>% 
+    sf::st_transform(4326)
   
 }
 

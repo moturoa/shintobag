@@ -31,7 +31,7 @@ get_osm_from_cache <- function(gemeentes, cache_folder = "cache", ...){
       data <- shintobag::get_gemeente_osm(gemeente, ...)
       saveRDS(data, fn)
     } else {
-      message(glue::glue("BAG for {gemeente} exists in cache"))
+      message(glue::glue("OSM for {gemeente} exists in cache"))
     }
     
   }
