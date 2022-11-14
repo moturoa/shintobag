@@ -1,4 +1,6 @@
 #' Bag Select Module
+#' @description
+#' `r lifecycle::badge('deprecated')`
 #' @rdname bagselect
 #' @export
 bagSelectUI <- function(id,
