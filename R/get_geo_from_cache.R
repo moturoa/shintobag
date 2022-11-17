@@ -31,7 +31,7 @@ get_geo_from_cache <- function(gemeentes, cache_folder = "cache", ...){
       data <- shintobag::get_gemeente_geo(gemeente, get_latest_data = TRUE, ...)
       saveRDS(data, fn)
     } else {
-      message(glue::glue("BAG for {gemeente} exists in cache"))
+      message(glue::glue("GEO for {gemeente} exists in cache"))
     }
     
   }
