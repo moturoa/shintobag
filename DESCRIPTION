@@ -1,7 +1,7 @@
 Package: shintobag
 Type: Package
 Title: Work with the BAG
-Version: 0.7-10
+Version: 0.7-11
 Author: Remko Duursma
 Maintainer: Remko Duursma <remko@shintolabs.nl>
 Description: Match untidy addresses to the BAG, download the BAG, work with the BAG.
