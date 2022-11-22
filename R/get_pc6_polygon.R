@@ -16,7 +16,7 @@ get_pc6_polygon <- function(geovlak, con = NULL,  gemeenten=NULL, ...){
   polygon_txt <- sf::st_as_text(polygon)  
   
   # increase performance by subsetting region
-  subsetquery <- ifelse(!is.null(gemeenten), glue("in ('{paste(gemeenten, collapse=\"','\")}') and "), "")
+  subsetquery <- ifelse(!is.null(gemeenten), glue("gm_naam in ('{paste(gemeenten, collapse=\"','\")}') and "), "")
   
   # get data in polygon
   sf::st_read(con, query = glue::glue("select * from cbs_postcode6_2020 as geodata ",
