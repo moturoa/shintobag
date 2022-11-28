@@ -4,7 +4,7 @@
 \alias{get_pc6_polygon}
 \title{Get postcode-6 data for a polygon}
 \usage{
-get_pc6_polygon(geovlak, con = NULL, ...)
+get_pc6_polygon(geovlak, con = NULL, gemeenten = NULL, ...)
 }
 \arguments{
 \item{geovlak}{An sfc polygon (geo column in an sf dataframe)}

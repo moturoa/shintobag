@@ -221,3 +221,19 @@ get_gemeente_geo <- function(gemeente,
   
 }
 
+
+
+#' Plot method for a geo object
+#' @export
+#' @rdname get_gemeente_geo
+plot.gemeentegrenzen <- function(x, ...){
+  
+  if(!requireNamespace(leaflet))stop("Install leaflet first!")
+  
+  leaflet::leaflet() %>%
+    leaflet::addTiles() %>%
+    leaflet::addPolygons(data = x$grens, fill = FALSE, color = "black", weight = 1) %>%
+    leaflet::addPolygons(data = x$buurten, fill = FALSE, color = "red", weight = 3) %>%
+    leaflet::addPolygons(data = x$wijken, fill = FALSE, color = "blue", weight = 2)
+}
+

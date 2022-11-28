@@ -62,7 +62,6 @@ Hier worden de bestanden gedownload naar de folder 'open_data' in de huidige wor
 Om de bestanden in te lezen gebruik je:
 
 ```{r eval = FALSE}
-bag <- arrow::read_feather("open_data/bag_Eindhoven.feather")
 bag_spatial <- readRDS("open_data/bag_Eindhoven_sf.rds")
 geo <- readRDS("open_data/geo_Eindhoven.rds")
 ```

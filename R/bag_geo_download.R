@@ -276,14 +276,14 @@ rbind_geo <- function(lis){
 
 
 #' Download BAG and Geo data for a Gemeente
-#' @description Downloads wijk, buurt, gemeente borders, and the BAG for a Gemeente.
-#' For BAG, writes an RDS into `out_path` (a spatial version, sf-dataframe), and a .feather (
-#'  a non-spatial version for very fast reading). For geo, writes e.g. "geo_Eindhoven.rds", a list
-#'  with components: wijken, buurten, grens.
+#' @description `r lifecycle::badge('deprecated')`. We now use `get_bag_from_cache` and `get_geo_from_cache`. 
+#' Downloads wijk, buurt, gemeente borders, and the BAG for a Gemeente.
+#' For BAG, writes an RDS into `out_path` (a spatial version, sf-dataframe). 
+#'  For geo, writes e.g. "geo_Eindhoven.rds", a list with components: wijken, buurten, grens.
 #' @param gemeente E.g. "Eindhoven"
 #' @param out_path The relative path to write the datasets to.
-#' @param rds If TRUE, writes RDS of the sf-dataframe
-#' @param feather If TRUE, writes a feather of the non-sf dataframe
+#' @param rds `r lifecycle::badge('deprecated')` Always writes RDS
+#' @param feather `r lifecycle::badge('deprecated')` Unused - feather dependency removed
 #' @export
 download_gemeente_opendata <- function(gemeente,
                                        out_path = ".",
@@ -296,7 +296,6 @@ download_gemeente_opendata <- function(gemeente,
 
   fn_geo <- file.path(out_path, paste0("geo_", gemeente, ".rds"))
   fn_bag_1 <- file.path(out_path, paste0("bag_",gemeente,"_sf.rds"))
-  fn_bag_2 <- file.path(out_path, paste0("bag_",gemeente,".feather"))
 
   # gemeente grenzen, wijk, buurt grenzen
   if(!file.exists(fn_geo) | re_download){
@@ -320,36 +319,14 @@ download_gemeente_opendata <- function(gemeente,
     })
 
     # sf-spatial
-    if(rds){
-      saveRDS(bag, fn_bag_1)  
-    }
+    saveRDS(bag, fn_bag_1)  
     
-
-    # tibble, feather
-    bag <- tibble::as_tibble(bag)
-    bag$geopunt <- NULL
-
-    if(feather){
-      feather::write_feather(bag, fn_bag_2)
-    }
-
   }
 
 }
 
 
 
-#' Plot method for a geo object
-#' @export
-plot.gemeentegrenzen <- function(x, ...){
 
-  if(!requireNamespace(leaflet))stop("Install leaflet first!")
-
-  leaflet::leaflet() %>%
-    leaflet::addTiles() %>%
-    leaflet::addPolygons(data = x$grens, fill = FALSE, color = "black", weight = 1) %>%
-    leaflet::addPolygons(data = x$buurten, fill = FALSE, color = "red", weight = 3) %>%
-    leaflet::addPolygons(data = x$wijken, fill = FALSE, color = "blue", weight = 2)
-}
 
 

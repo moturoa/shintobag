@@ -3,6 +3,7 @@
 \name{get_geo}
 \alias{get_geo}
 \alias{get_gemeente_geo}
+\alias{plot.gemeentegrenzen}
 \title{Download Buurt, Wijk, Gemeente grenzen.}
 \usage{
 get_geo(
@@ -25,6 +26,8 @@ get_gemeente_geo(
   kws_jaar = 2021,
   ...
 )
+
+\method{plot}{gemeentegrenzen}(x, ...)
 }
 \arguments{
 \item{gemeente}{Gemeentenaam}

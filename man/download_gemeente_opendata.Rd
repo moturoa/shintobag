@@ -20,13 +20,13 @@ download_gemeente_opendata(
 
 \item{out_path}{The relative path to write the datasets to.}
 
-\item{rds}{If TRUE, writes RDS of the sf-dataframe}
+\item{rds}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Always writes RDS}
 
-\item{feather}{If TRUE, writes a feather of the non-sf dataframe}
+\item{feather}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Unused - feather dependency removed}
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}. We now use \code{get_bag_from_cache} and \code{get_geo_from_cache}.
 Downloads wijk, buurt, gemeente borders, and the BAG for a Gemeente.
-For BAG, writes an RDS into \code{out_path} (a spatial version, sf-dataframe), and a .feather (
-a non-spatial version for very fast reading). For geo, writes e.g. "geo_Eindhoven.rds", a list
-with components: wijken, buurten, grens.
+For BAG, writes an RDS into \code{out_path} (a spatial version, sf-dataframe).
+For geo, writes e.g. "geo_Eindhoven.rds", a list with components: wijken, buurten, grens.
 }
