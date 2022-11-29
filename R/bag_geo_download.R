@@ -307,7 +307,7 @@ download_gemeente_opendata <- function(gemeente,
 
 
   # BAG
-  if(!file.exists(fn_bag_2) | re_download){
+  if(!file.exists(fn_bag_1) | re_download){
     bag <- get_bag(gemeente)
 
     # buurt_naam, wijk_naam toevoegen op basis van locatie
