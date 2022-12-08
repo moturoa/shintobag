@@ -15,6 +15,7 @@ get_geo(
   con = NULL,
   spatial = TRUE,
   extra_sql = NULL,
+  include_water = FALSE,
   ...
 )
 

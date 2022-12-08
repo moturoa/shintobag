@@ -12,6 +12,7 @@ get_geo <- function(gemeente = NULL,
                     con = NULL, 
                     spatial = TRUE,
                     extra_sql = NULL,
+                    include_water = FALSE,
                     ...){
   
   if(is.null(con)){
@@ -50,6 +51,10 @@ get_geo <- function(gemeente = NULL,
   } else {
     out <- DBI::dbGetQuery(con, query)
     out$geometry <- NULL
+  }
+  
+  if(!include_water && "water" %in% names(out)){
+    out <- dplyr::filter(out, water == "NEE")
   }
   
   
