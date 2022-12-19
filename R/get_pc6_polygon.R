@@ -25,3 +25,6 @@ get_pc6_polygon <- function(geovlak, con = NULL,  gemeenten=NULL, ...){
     sf::st_transform(4326)
   
 }
+
+
+
