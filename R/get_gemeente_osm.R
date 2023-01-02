@@ -4,7 +4,7 @@
 #' @param gemeente Gemeente
 #' @param \dots Further args passed to [shintobag::shinto_db_connection()]
 #' @export
-get_gemeente_osm <- function(gemeente, ...){
+get_gemeente_osm <- function(gemeente, jaar="2022", ...){
   
   con <- try(shintobag::shinto_db_connection("data_osm_nederland", ...)  )
   if(inherits(con, "try-error")){
@@ -12,7 +12,7 @@ get_gemeente_osm <- function(gemeente, ...){
   }
   on.exit(DBI::dbDisconnect(con))
   
-  grens <- get_geo(gemeente, what = "grens")
+  grens <- get_geo(gemeente, what = "grens", jaar)
   
   # transform naar WGS84-pseudo mercator; volgens de OSM CRS
   polygon <- grens$geom %>%
