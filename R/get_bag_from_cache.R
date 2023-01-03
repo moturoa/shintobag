@@ -45,7 +45,7 @@ get_bag_from_cache <- function(gemeentes, cache_folder = "cache"){
     })
     
     # Row-bind alles
-    bag <- do.call(rbind, bags)
+    bag <- dplyr::bind_rows(bags)
     
   } else {
     
