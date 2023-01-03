@@ -4,7 +4,7 @@
 \alias{get_gemeente_osm}
 \title{Get Gemeente OSM data (amenity, shop)}
 \usage{
-get_gemeente_osm(gemeente, ...)
+get_gemeente_osm(gemeente, jaar = "2022", ...)
 }
 \arguments{
 \item{gemeente}{Gemeente}
