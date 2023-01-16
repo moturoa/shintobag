@@ -17,7 +17,7 @@ get_osm_from_cache <- function(gemeentes, cache_folder = "cache", ...){
   }
   
   # TODO voor nu zelfde path als BAG
-  osm_path <- get_bag_cache_path("cache")
+  osm_path <- get_bag_cache_path(cache_folder)
   
   if(osm_path == cache_folder){
     dir.create(cache_folder, showWarnings = FALSE)
