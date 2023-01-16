@@ -17,7 +17,7 @@ get_geo_from_cache <- function(gemeentes, cache_folder = "cache", ...){
   }
   
   # TODO voor nu zelfde path als BAG
-  geo_path <- get_bag_cache_path("cache")
+  geo_path <- get_bag_cache_path(cache_folder)
   
   if(geo_path == cache_folder){
     dir.create(cache_folder, showWarnings = FALSE)

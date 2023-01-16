@@ -15,9 +15,7 @@ get_bag_from_cache <- function(gemeentes, cache_folder = "cache"){
     glue::glue("bag_{gemeente}_plus.rds")
   }
   
-  bag_path <- ifelse(Sys.getenv("R_CONNECT_SERVER") == "",  # env var only on rsconnect
-                     cache_folder, 
-                     "/data/BAG")   # path op rstudio connect (op devapp althans)
+  bag_path <- get_bag_cache_path(cache_folder)
   
   if(bag_path == cache_folder){
     dir.create(cache_folder, showWarnings = FALSE)
