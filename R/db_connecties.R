@@ -1,6 +1,9 @@
 
 #' Make a database connection
-#' @description Make a connection with RPostgres to one of the Shinto Labs databases.
+#' @description `r lifecycle::badge('deprecated')` 
+#' This function is deprecated; please use [shintodb::connect()]
+#' It is provided here only for backwards compatibility.
+#' Make a connection with RPostgres to one of the Shinto Labs databases.
 #' @details `global_db_connection` is a shorthand for `shinto_db_connection` with `search_global = TRUE`. 
 #' Use this option to store encrypted passwords in a
 #' @param what Welke database connectie in het config bestand? (bv. "BAGdata")
@@ -70,10 +73,4 @@ shinto_db_connection <- function(what,
 
 
 
-
-#' @export
-#' @rdname shinto_db_connection
-global_db_connection <- function(...){
-  shinto_db_connection(..., search_global = TRUE)  
-}
 
