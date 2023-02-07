@@ -2,7 +2,6 @@
 % Please edit documentation in R/db_connecties.R
 \name{shinto_db_connection}
 \alias{shinto_db_connection}
-\alias{global_db_connection}
 \title{Make a database connection}
 \usage{
 shinto_db_connection(
@@ -13,8 +12,6 @@ shinto_db_connection(
   pool = FALSE,
   config_entry = NULL
 )
-
-global_db_connection(...)
 }
 \arguments{
 \item{what}{Welke database connectie in het config bestand? (bv. "BAGdata")}
@@ -28,6 +25,9 @@ global_db_connection(...)
 \item{port_default}{The default port if missing from config ("dbport")}
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+This function is deprecated; please use \code{\link[shintodb:connect]{shintodb::connect()}}
+It is provided here only for backwards compatibility.
 Make a connection with RPostgres to one of the Shinto Labs databases.
 }
 \details{
