@@ -2,11 +2,11 @@
 #' Get Gemeente OSM data (amenity, shop)
 #' @details Need 'data_osm' config entry in local config file
 #' @param gemeente Gemeente
-#' @param \dots Further args passed to [shintobag::shinto_db_connection()]
+#' @param \dots Further args passed to [shintodb::connect()]
 #' @export
 get_gemeente_osm <- function(gemeente, jaar="2022", ...){
   
-  con <- try(shintobag::shinto_db_connection("data_osm_nederland", ...)  )
+  con <- try(shintodb::connect("data_osm_nederland", ...)  )
   if(inherits(con, "try-error")){
     stop("Add 'data_osm_nederland' (user: datastraat) to config.yml")
   }

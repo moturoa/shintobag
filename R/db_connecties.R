@@ -20,55 +20,8 @@ shinto_db_connection <- function(what,
                                  pool = FALSE,
                                  config_entry = NULL){
 
-  if(is.null(config_entry)){
-    config_entry <- Sys.getenv("R_CONFIG_ACTIVE", "default")  
-  }
-
-  if(search_global){
-    file <- open_global_config()
-  }
+  stop("This function is deprecated, switch to `shintodb::connect` instead.")
   
-  conf <- config::get(value = what,
-                      config = config_entry,
-                      file = file)
-  
-  if(is.null(conf)){
-    stop(glue::glue("Connection entry '{what}' not found in file '{file}' (section '{config_entry}')"))
-  }
-
-  # If password is encrypted, decrypt it before connecting
-  if(string_is_encrypted(conf$dbpassword)){
-    conf$dbpassword <- decrypt(conf$dbpassword)
-  }
-
-  # Als NULL in een non-default, zoek in default, alleen als allowed
-  if(allow_default_fallback & is.null(conf) & config_entry != "default"){
-    # conf <- config::get(value = what,
-    #                     config = "default",
-    #                     file = file)
-    stop("'allow_default_fallback' argument is deprecated. Configure all connections.")
-  }
-
-  if(is.null(conf)){
-    stop(paste("Entry", what, "not found in", file," - add password information and try again!"))
-  }
-
-  if(!pool){
-    DBI::dbConnect(RPostgres::Postgres(),
-                   dbname = conf$dbname,
-                   host = conf$dbhost,
-                   port = conf$dbport,
-                   user = conf$dbuser,
-                   password = conf$dbpassword)
-  } else {
-    pool::dbPool(RPostgres::Postgres(),
-                 dbname = conf$dbname,
-                 host = conf$dbhost,
-                 port = conf$dbport,
-                 user = conf$dbuser,
-                 password = conf$dbpassword)
-  }
-
 }
 
 

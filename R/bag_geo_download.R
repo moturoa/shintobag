@@ -29,7 +29,7 @@ get_bag <- function(gemeente, con = NULL, table = c("adres_full","adres_plus","a
   }
 
   if(is.null(con)){
-    con <- shinto_db_connection("data_bag", ...)
+    con <- shintodb::connect("data_bag", ...)
     on.exit(DBI::dbDisconnect(con))
   }
 
@@ -184,7 +184,7 @@ get_data_polygon <- function(polygon,
 get_perceel_geopunt <- function(pnt, con = NULL, ...){
 
   if(is.null(con)){
-    con <- shinto_db_connection("data_brk", ...)
+    con <- shintodb::connect("data_brk", ...)
     on.exit(DBI::dbDisconnect(con))
   }
 
@@ -209,7 +209,7 @@ get_perceel_geopunt <- function(pnt, con = NULL, ...){
 get_panden_perceel <- function(perceel, min_overlap = 0.9, con = NULL, ...){
 
   if(is.null(con)){
-    con <- shinto_db_connection("data_bag", ...)
+    con <- shintodb::connect("data_bag", ...)
     on.exit(DBI::dbDisconnect(con))
   }
 
@@ -232,7 +232,7 @@ get_panden_perceel <- function(perceel, min_overlap = 0.9, con = NULL, ...){
 #' @export
 get_woonkernen <- function(grens, ...){
 
-  con <- shinto_db_connection("data_top10nl", ...)
+  con <- shintodb::connect("data_top10nl", ...)
   on.exit(DBI::dbDisconnect(con))
 
   grens <- sf::st_transform(grens, 28992)

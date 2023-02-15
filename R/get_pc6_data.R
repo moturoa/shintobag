@@ -7,7 +7,7 @@ get_pc6_data <- function(pc6, con = NULL, ...){
   
   
   if(is.null(con)){
-    con <- shinto_db_connection("data_cbs", ...)
+    con <- shintodb::connect("data_cbs", ...)
     on.exit(DBI::dbDisconnect(con))
   }
   

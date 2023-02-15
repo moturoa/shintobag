@@ -9,7 +9,7 @@ get_gemeente_osm(gemeente, jaar = "2022", ...)
 \arguments{
 \item{gemeente}{Gemeente}
 
-\item{\dots}{Further args passed to \code{\link[=shinto_db_connection]{shinto_db_connection()}}}
+\item{\dots}{Further args passed to \code{\link[shintodb:connect]{shintodb::connect()}}}
 }
 \description{
 Get Gemeente OSM data (amenity, shop)

@@ -16,7 +16,7 @@ get_geo <- function(gemeente = NULL,
                     ...){
   
   if(is.null(con)){
-    con <- shinto_db_connection("data_cbs", ...)
+    con <- shintodb::connect("data_cbs", ...)
     on.exit(DBI::dbDisconnect(con))
   }
   
@@ -99,7 +99,7 @@ get_kws <- function(gemeente,
   assert_kws_peiljaar(peiljaar)
   
   if(is.null(con)){
-    con <- shinto_db_connection("data_cbs", ...)
+    con <- shintodb::connect("data_cbs", ...)
     on.exit(DBI::dbDisconnect(con))
   }
   
@@ -159,7 +159,7 @@ add_kws <- function(data, peiljaar, con = NULL){
 get_kws_metadata <- function(con = NULL, ...){
   
   if(is.null(con)){
-    con <- shinto_db_connection("data_cbs", ...)
+    con <- shintodb::connect("data_cbs", ...)
     on.exit(DBI::dbDisconnect(con))
   }
   
@@ -206,7 +206,7 @@ get_gemeente_geo <- function(gemeente,
                              kws_jaar = 2021,
                              ...){
   
-  cbs <- shinto_db_connection("data_cbs", ...)
+  cbs <- shintodb::connect("data_cbs", ...)
   on.exit(DBI::dbDisconnect(cbs))
   
   # TODO has to be configured somewhere; we need bag/geo/cbs metadata tables

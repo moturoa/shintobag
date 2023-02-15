@@ -6,7 +6,7 @@ get_pc6_polygon <- function(geovlak, con = NULL,  gemeenten=NULL, ...){
   
   
   if(is.null(con)){
-    con <- shinto_db_connection("data_cbs", ...)
+    con <- shintodb::connect("data_cbs", ...)
     on.exit(DBI::dbDisconnect(con))
   }
   
