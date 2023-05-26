@@ -143,7 +143,7 @@ get_data_polygon <- function(polygon,
   polygon_txt <- sf::st_as_text(polygon)  
   
   out <- sf::st_read(con,
-                 query = glue("select * from {table} as geodata",
+                 query = glue::glue("select * from {table} as geodata",
                               " where {st_function}(ST_GeomFromText('{polygon_txt}', 28992),",
                               " geodata.{geocolumn})"))
 
