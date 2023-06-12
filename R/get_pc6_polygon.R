@@ -19,7 +19,7 @@ get_pc6_polygon <- function(geovlak, con = NULL,  gemeenten=NULL, ...){
   subsetquery <- ifelse(!is.null(gemeenten), glue::glue("gm_naam in ('{paste(gemeenten, collapse=\"','\")}') and "), "")
   
   # get data in polygon
-  sf::st_read(con, query = glue::glue("select * from cbs_postcode6_2020 as geodata ",
+  sf::st_read(con, query = glue::glue("select * from cbs.cbs_postcode6_2020 as geodata ",
                                 " where {subsetquery}st_contains(ST_GeomFromText('{polygon_txt}', 28992),",
                                 " st_centroid(geodata.geometry))")) %>% 
     sf::st_transform(4326)

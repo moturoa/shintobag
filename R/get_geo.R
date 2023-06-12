@@ -14,6 +14,7 @@ get_geo <- function(gemeente = NULL,
                     extra_sql = NULL,
                     include_water = FALSE,
                     ...){
+
   
   if(is.null(con)){
     con <- shintodb::connect("data_cbs", ...)
@@ -43,7 +44,8 @@ get_geo <- function(gemeente = NULL,
     )
   }
   
-  query <- make_sql(tb, gemeente)
+  query <- glue::glue("select * from cbs.{tb} where gm_naam = '{gemeente}'")
+  
   query <- paste(query, extra_sql)
   
   if(spatial){
@@ -52,15 +54,15 @@ get_geo <- function(gemeente = NULL,
     out <- DBI::dbGetQuery(con, query)
     out$geometry <- NULL
   }
+
+  if(nrow(out) == 0){
+    stop(paste0("Gemeente '",gemeente, "' niet gevonden in data_cbs"))
+  }  
   
   if(!include_water && "water" %in% names(out)){
     out <- dplyr::filter(out, water == "NEE")
   }
-  
-  
-  if(nrow(out) == 0){
-    stop(paste0("Gemeente '",gemeente, "' niet gevonden in data_cbs"))
-  }  
+
   
   # Fix names. First column must be the region code (see add_kws)
   if(what == "grens")out <- dplyr::relocate(out, "gm_code")
@@ -115,7 +117,7 @@ get_kws <- function(gemeente,
                     wijken = "wk_code"
   )
   
-  dplyr::tbl(con, "cbs_kerncijfers_2013_2021") %>%
+  dplyr::tbl(con, in_schema("cbs","cbs_kerncijfers_2013_2021")) %>%
     dplyr::filter(gm_naam %in% !!gemeente,
                   peiljaar %in% !!peiljaar,
                   regio_type == !!s_txt) %>%
@@ -163,7 +165,7 @@ get_kws_metadata <- function(con = NULL, ...){
     on.exit(DBI::dbDisconnect(con))
   }
   
-  dplyr::tbl(con, "cbs_kerncijfers_2013_2021_metadata") %>% collect
+  dplyr::tbl(con, in_schema("cbs","cbs_kerncijfers_2013_2021_metadata")) %>% collect
   
 }
 

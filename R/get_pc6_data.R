@@ -12,7 +12,7 @@ get_pc6_data <- function(pc6, con = NULL, ...){
   }
   
   # get data in polygon
-  query <- glue::glue_sql("SELECT * FROM cbs_postcode6_2020 WHERE pc6 IN ({vals*})", 
+  query <- glue::glue_sql("SELECT * FROM cbs.cbs_postcode6_2020 WHERE pc6 IN ({vals*})", 
                           vals = pc6, .con = con)
   
   out <- sf::st_read(con, query = query) 
