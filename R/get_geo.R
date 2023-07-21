@@ -44,7 +44,8 @@ get_geo <- function(gemeente = NULL,
     )
   }
   
-  query <- glue::glue("select * from cbs.{tb} where gm_naam = '{gemeente}'")
+  sql <- as.character(glue::glue("select * from cbs.{tb} where gm_naam = ?gem"))
+  query <- DBI::sqlInterpolate(DBI::ANSI(), sql, gem = gemeente)
   
   query <- paste(query, extra_sql)
   
