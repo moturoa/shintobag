@@ -55,7 +55,7 @@ get_osm_from_cache <- function(gemeentes, cache_folder = "cache", ...){
     
   }
   
-  flog.info(glue::glue("OSM layers read in {round(tm[3],1)}s."))
+  futile.logger::flog.info(glue::glue("OSM layers read in {round(tm[3],1)}s."))
   
   
   return(osm)

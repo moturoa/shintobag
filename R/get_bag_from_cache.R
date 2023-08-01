@@ -8,8 +8,10 @@
 #' @param gemeentes Vector of gemeente naam to download/read
 #' @param cache_folder The **local** folder to use for caching. Ignored on rsconnect,
 #' where a fixed path is used ("/data/bag" is a share on rsconnect dev and prod).
+#' @param force Download a new copy even when we have it in the cache
+#' @importFrom futile.logger flog.info
 #' @export
-get_bag_from_cache <- function(gemeentes, cache_folder = "cache"){
+get_bag_from_cache <- function(gemeentes, cache_folder = "cache", force = FALSE){
   
   bag_file_name <- function(gemeente){
     glue::glue("bag_{gemeente}_plus.rds")
@@ -24,7 +26,7 @@ get_bag_from_cache <- function(gemeentes, cache_folder = "cache"){
   for(gemeente in gemeentes){
     
     fn <- file.path(bag_path, bag_file_name(gemeente))
-    if(!file.exists(fn)){
+    if(force || !file.exists(fn)){
       message(glue::glue("Downloading BAG for {gemeente} from PostgresDB, storing as RDS"))
       data <- shintobag::get_bag(gemeente, table = "adres_plus")
       saveRDS(data, fn)
@@ -53,7 +55,7 @@ get_bag_from_cache <- function(gemeentes, cache_folder = "cache"){
   
   }
   
-  flog.info(glue::glue("BAG extracts read in {round(tm[3],1)}s."))
+  futile.logger::flog.info(glue::glue("BAG extracts read in {round(tm[3],1)}s."))
   
   
 return(bag)
