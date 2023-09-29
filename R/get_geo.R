@@ -85,8 +85,8 @@ get_geo <- function(gemeente = NULL,
 
 
 assert_kws_peiljaar <- function(peiljaar){
-  if(!all(peiljaar %in% 2013:2022)){
-    stop("Alleen data geupload tussen 2013 en 2022")
+  if(!all(peiljaar >= 2013)){
+    stop("Alleen data geupload vanaf 2013 (tot huidig; zie repos cbs_kerncijfers_rmd")
   }
 }
 
@@ -96,6 +96,7 @@ assert_kws_peiljaar <- function(peiljaar){
 get_kws <- function(gemeente,
                     what = c("grens","buurten","wijken"),
                     peiljaar = 2021,
+                    table = "cbs_buurt_wijk_gemeente_kerncijfers", 
                     con = NULL, ...){
   
   what <- match.arg(what)
@@ -118,7 +119,7 @@ get_kws <- function(gemeente,
                     wijken = "wk_code"
   )
   
-  dplyr::tbl(con, in_schema("cbs","cbs_kerncijfers_2013_2021")) %>%
+  dplyr::tbl(con, in_schema("cbs",table)) %>%
     dplyr::filter(gm_naam %in% !!gemeente,
                   peiljaar %in% !!peiljaar,
                   regio_type == !!s_txt) %>%
@@ -159,14 +160,14 @@ add_kws <- function(data, peiljaar, con = NULL){
 
 #' @rdname get_gemeente_kws
 #' @export
-get_kws_metadata <- function(con = NULL, ...){
+get_kws_metadata <- function(con = NULL, ..., table = "cbs_buurt_wijk_gemeente_kerncijfers_metadata"){
   
   if(is.null(con)){
     con <- shintodb::connect("data_cbs", ...)
     on.exit(DBI::dbDisconnect(con))
   }
   
-  dplyr::tbl(con, in_schema("cbs","cbs_kerncijfers_2013_2021_metadata")) %>% collect
+  dplyr::tbl(con, in_schema("cbs",table)) %>% collect
   
 }
 
