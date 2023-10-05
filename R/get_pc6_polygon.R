@@ -34,9 +34,14 @@ get_pc6_polygon <- function(geovlak, con = NULL,  gemeenten=NULL, ...){
     
   }
   
-  sf::st_read(con, query = query) %>% 
-    sf::st_transform(4326)
+  out <- sf::st_read(con, query = query)
   
+  if(nrow(out) == 0){
+    return(NULL)
+  } else {
+    return(sf::st_transform(out, 4326))
+  }
+    
 }
 
 
