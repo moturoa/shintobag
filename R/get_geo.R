@@ -119,7 +119,7 @@ get_kws <- function(gemeente,
                     wijken = "wk_code"
   )
   
-  dplyr::tbl(con, in_schema("cbs",table)) %>%
+  dplyr::tbl(con, dbplyr::in_schema("cbs",table)) %>%
     dplyr::filter(gm_naam %in% !!gemeente,
                   peiljaar %in% !!peiljaar,
                   regio_type == !!s_txt) %>%
@@ -167,7 +167,7 @@ get_kws_metadata <- function(con = NULL, ..., table = "cbs_buurt_wijk_gemeente_k
     on.exit(DBI::dbDisconnect(con))
   }
   
-  dplyr::tbl(con, in_schema("cbs",table)) %>% collect
+  dplyr::tbl(con, dbplyr::in_schema("cbs",table)) %>% collect
   
 }
 
