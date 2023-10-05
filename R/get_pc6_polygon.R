@@ -28,7 +28,7 @@ get_pc6_polygon <- function(geovlak, con = NULL,  gemeenten=NULL, ...){
   } else {
     
     query <- glue::glue_sql("select * from cbs.cbs_postcode6_2020 as geodata ",
-                            " where {subsetquery} st_contains(ST_GeomFromText({polygon_txt}, 28992),",
+                            " where st_contains(ST_GeomFromText({polygon_txt}, 28992),",
                             " st_centroid(geodata.geometry))",
                             .con = con, subsetquery = subsetquery, polygon_txt = polygon_txt)
     
