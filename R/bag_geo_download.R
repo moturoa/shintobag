@@ -253,7 +253,7 @@ rbind_geo <- function(lis){
 
     l <- lapply(lis, "[[", nm[i])
 
-    out[[i]] <- do.call(rbind, l)
+    out[[i]] <- dplyr::bind_rows(l)
 
   }
   names(out) <- nm
