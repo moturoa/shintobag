@@ -6,7 +6,7 @@
 #' @export
 get_geo <- function(gemeente = NULL,
                     what = c("grens","buurten","wijken"),
-                    jaar = c("2018", "2021", "2022"),
+                    jaar = c("2018", "2021", "2022", "2023"),
                     kws = FALSE,
                     kws_jaar = 2021,
                     con = NULL, 
@@ -40,6 +40,12 @@ get_geo <- function(gemeente = NULL,
                  grens = "gemeente_2022",
                  wijken = "wijk_2022",
                  buurten = "buurt_2022"
+    )
+  } else if(jaar == "2023"){
+    tb <- switch(what,
+                 grens = "gemeente_2023",
+                 wijken = "wijk_2023",
+                 buurten = "buurt_2023"
     )
   }
   
@@ -82,7 +88,7 @@ get_geo <- function(gemeente = NULL,
 
 
 assert_kws_peiljaar <- function(peiljaar){
-  if(!all(peiljaar %in% 2013:2022)){
+  if(!all(peiljaar %in% 2013:2023)){
     stop("Alleen data geupload tussen 2013 en 2022")
   }
 }
