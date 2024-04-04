@@ -15,6 +15,7 @@ get_geo <- function(gemeente = NULL,
                     include_water = FALSE,
                     ...){
   
+  
   if(is.null(con)){
     con <- shintodb::connect("data_cbs", ...)
     on.exit(DBI::dbDisconnect(con))
@@ -49,7 +50,9 @@ get_geo <- function(gemeente = NULL,
     )
   }
   
-  query <- make_sql(tb, gemeente)
+  sql <- as.character(glue::glue("select * from cbs.{tb} where gm_naam = ?gem"))
+  query <- DBI::sqlInterpolate(DBI::ANSI(), sql, gem = gemeente)
+  
   query <- paste(query, extra_sql)
   
   if(spatial){
@@ -59,14 +62,14 @@ get_geo <- function(gemeente = NULL,
     out$geometry <- NULL
   }
   
+  if(nrow(out) == 0){
+    stop(paste0("Gemeente '",gemeente, "' niet gevonden in data_cbs"))
+  }  
+  
   if(!include_water && "water" %in% names(out)){
     out <- dplyr::filter(out, water == "NEE")
   }
   
-  
-  if(nrow(out) == 0){
-    stop(paste0("Gemeente '",gemeente, "' niet gevonden in data_cbs"))
-  }  
   
   # Fix names. First column must be the region code (see add_kws)
   if(what == "grens")out <- dplyr::relocate(out, "gm_code")
@@ -88,8 +91,8 @@ get_geo <- function(gemeente = NULL,
 
 
 assert_kws_peiljaar <- function(peiljaar){
-  if(!all(peiljaar %in% 2013:2023)){
-    stop("Alleen data geupload tussen 2013 en 2022")
+  if(!all(peiljaar >= 2013)){
+    stop("Alleen data geupload vanaf 2013 (tot huidig; zie repos cbs_kerncijfers_rmd")
   }
 }
 
@@ -99,6 +102,7 @@ assert_kws_peiljaar <- function(peiljaar){
 get_kws <- function(gemeente,
                     what = c("grens","buurten","wijken"),
                     peiljaar = 2021,
+                    table = "cbs_buurt_wijk_gemeente_kerncijfers", 
                     con = NULL, ...){
   
   what <- match.arg(what)
@@ -121,7 +125,7 @@ get_kws <- function(gemeente,
                     wijken = "wk_code"
   )
   
-  dplyr::tbl(con, "cbs_kerncijfers_2013_2021") %>%
+  dplyr::tbl(con, dbplyr::in_schema("cbs",table)) %>%
     dplyr::filter(gm_naam %in% !!gemeente,
                   peiljaar %in% !!peiljaar,
                   regio_type == !!s_txt) %>%
@@ -162,14 +166,14 @@ add_kws <- function(data, peiljaar, con = NULL){
 
 #' @rdname get_gemeente_kws
 #' @export
-get_kws_metadata <- function(con = NULL, ...){
+get_kws_metadata <- function(con = NULL, ..., table = "cbs_buurt_wijk_gemeente_kerncijfers_metadata"){
   
   if(is.null(con)){
     con <- shintodb::connect("data_cbs", ...)
     on.exit(DBI::dbDisconnect(con))
   }
   
-  dplyr::tbl(con, "cbs_kerncijfers_2013_2021_metadata") %>% collect
+  dplyr::tbl(con, dbplyr::in_schema("cbs",table)) %>% collect
   
 }
 

@@ -15,15 +15,33 @@ get_pc6_polygon <- function(geovlak, con = NULL,  gemeenten=NULL, ...){
   
   polygon_txt <- sf::st_as_text(polygon)  
   
-  # increase performance by subsetting region
-  subsetquery <- ifelse(!is.null(gemeenten), glue("gm_naam in ('{paste(gemeenten, collapse=\"','\")}') and "), "")
   
-  # get data in polygon
-  sf::st_read(con, query = glue::glue("select * from cbs_postcode6_2020 as geodata ",
-                                " where {subsetquery}st_contains(ST_GeomFromText('{polygon_txt}', 28992),",
-                                " st_centroid(geodata.geometry))")) %>% 
-    sf::st_transform(4326)
+  # Recommended: search gemeente AND on a polygon, since it is much faster
+  if(!is.null(gemeenten)){
+    
+    query <- glue::glue_sql("select * from cbs.cbs_postcode6_2020 as geodata ",
+                            " where gm_naam in ({gems*}) and ",
+                            "st_contains(ST_GeomFromText({polygon_txt}, 28992),",
+                            " st_centroid(geodata.geometry))",
+                            .con = con, gems = gemeenten, polygon_txt = polygon_txt)
+    
+  } else {
+    
+    query <- glue::glue_sql("select * from cbs.cbs_postcode6_2020 as geodata ",
+                            " where st_contains(ST_GeomFromText({polygon_txt}, 28992),",
+                            " st_centroid(geodata.geometry))",
+                            .con = con, subsetquery = subsetquery, polygon_txt = polygon_txt)
+    
+  }
   
+  out <- sf::st_read(con, query = query)
+  
+  if(nrow(out) == 0){
+    return(NULL)
+  } else {
+    return(sf::st_transform(out, 4326))
+  }
+    
 }
 
 

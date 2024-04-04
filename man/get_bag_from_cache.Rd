@@ -4,13 +4,15 @@
 \alias{get_bag_from_cache}
 \title{Get BAG adres_plus for one or more gemeentes, local or server cache}
 \usage{
-get_bag_from_cache(gemeentes, cache_folder = "cache")
+get_bag_from_cache(gemeentes, cache_folder = "cache", force = FALSE)
 }
 \arguments{
 \item{gemeentes}{Vector of gemeente naam to download/read}
 
 \item{cache_folder}{The \strong{local} folder to use for caching. Ignored on rsconnect,
 where a fixed path is used ("/data/bag" is a share on rsconnect dev and prod).}
+
+\item{force}{Download a new copy even when we have it in the cache}
 }
 \description{
 Given one or more gemeente's, read the file \verb{bag_<gemeente>_plus.rds}

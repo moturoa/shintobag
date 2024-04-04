@@ -28,4 +28,3 @@ get_gemeente_osm <- function(gemeente, jaar="2022", ...){
   
 }
 
-  

@@ -4,10 +4,12 @@
 \alias{get_bag_cache_path}
 \title{Get path where BAG/GEO cached data is stored}
 \usage{
-get_bag_cache_path(cache = "cache")
+get_bag_cache_path(cache = "cache", server_cache_path = "/data/BAG")
 }
 \arguments{
 \item{cache}{The local cache, normally 'cache'}
+
+\item{server_cache_path}{Path to cache on the server (some sort of mount), ask devops}
 }
 \description{
 Get path where BAG/GEO cached data is stored

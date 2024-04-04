@@ -1,18 +1,5 @@
 
 
-# Helper om SQL queries te formatteren.
-# Alles in shintobag werkt op gemeente niveau.
-make_sql <- function(dbname, gemeente = NULL){
-
-  if(!is.null(gemeente)){
-    sql <- glue::glue("select * from {dbname} where GM_NAAM = ?gem")
-    DBI::sqlInterpolate(DBI::ANSI(), sql, gem = gemeente)
-  } else {
-    glue::glue("select * from {dbname}")
-  }
-
-}
-
 
 #' Download the BAG
 #' @description Download the BAG for one Gemeente at a time. Result is an `sf` spatial dataframe.
@@ -143,7 +130,7 @@ get_data_polygon <- function(polygon,
   polygon_txt <- sf::st_as_text(polygon)  
   
   out <- sf::st_read(con,
-                 query = glue("select * from {table} as geodata",
+                 query = glue::glue("select * from {table} as geodata",
                               " where {st_function}(ST_GeomFromText('{polygon_txt}', 28992),",
                               " geodata.{geocolumn})"))
 
@@ -266,7 +253,7 @@ rbind_geo <- function(lis){
 
     l <- lapply(lis, "[[", nm[i])
 
-    out[[i]] <- do.call(rbind, l)
+    out[[i]] <- dplyr::bind_rows(l)
 
   }
   names(out) <- nm
